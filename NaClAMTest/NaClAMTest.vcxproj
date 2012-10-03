@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|NaCl">
+      <Configuration>Debug</Configuration>
+      <Platform>NaCl</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|NaCl">
+      <Configuration>Release</Configuration>
+      <Platform>NaCl</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NaClAMTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NaClAMBase\NaClAMBase.vcxproj">
+      <Project>{7a11484c-421c-452a-9094-616a7407d778}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\pal\pal.vcxproj">
+      <Project>{d91c69ce-0b9c-4678-8c7f-bfa1625171a1}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C96506BD-0CB1-4483-AEFB-8733938A3A20}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>NaClAMTest</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
+    <NaClAddInVersion>1.0.4643.28692</NaClAddInVersion>
+    <VSNaClSDKRoot>$(NACL_SDK_ROOT)\</VSNaClSDKRoot>
+    <OutDir>$(ProjectDir)$(ToolchainName)\</OutDir>
+    <IntDir>$(ToolchainName)\$(Configuration)\</IntDir>
+    <IncludePath>$(VSNaClSDKRoot)include;</IncludePath>
+    <LibraryPath>$(VSNaClSDKRoot)lib;</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
+    <NaClAddInVersion>1.0.4643.28692</NaClAddInVersion>
+    <VSNaClSDKRoot>$(NACL_SDK_ROOT)\</VSNaClSDKRoot>
+    <OutDir>$(ProjectDir)$(ToolchainName)\</OutDir>
+    <IntDir>$(ToolchainName)\$(Configuration)\</IntDir>
+    <IncludePath>$(VSNaClSDKRoot)include;</IncludePath>
+    <LibraryPath>$(VSNaClSDKRoot)lib;</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal</AdditionalIncludeDirectories>
+      <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ppapi_cpp;ppapi</AdditionalDependencies>
+      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal</AdditionalIncludeDirectories>
+      <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

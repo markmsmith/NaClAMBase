@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|NaCl">
+      <Configuration>Debug</Configuration>
+      <Platform>NaCl</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|NaCl">
+      <Configuration>Release</Configuration>
+      <Platform>NaCl</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="libpal\dlmalloc\dlmalloc.cpp" />
+    <ClCompile Include="libpal\libpal.cpp" />
+    <ClCompile Include="libpal\pal_adi.cpp" />
+    <ClCompile Include="libpal\pal_algorithms.cpp" />
+    <ClCompile Include="libpal\pal_align.cpp" />
+    <ClCompile Include="libpal\pal_allocator.cpp" />
+    <ClCompile Include="libpal\pal_base64.cpp" />
+    <ClCompile Include="libpal\pal_binary_reader.cpp" />
+    <ClCompile Include="libpal\pal_command_buffer.cpp" />
+    <ClCompile Include="libpal\pal_compacting_allocator.cpp" />
+    <ClCompile Include="libpal\pal_console.cpp" />
+    <ClCompile Include="libpal\pal_debug.cpp" />
+    <ClCompile Include="libpal\pal_event.cpp" />
+    <ClCompile Include="libpal\pal_file.cpp" />
+    <ClCompile Include="libpal\pal_file_stream.cpp" />
+    <ClCompile Include="libpal\pal_font_rasterizer_freetype.cpp" />
+    <ClCompile Include="libpal\pal_font_rasterizer_stb.cpp" />
+    <ClCompile Include="libpal\pal_frame_clock.cpp" />
+    <ClCompile Include="libpal\pal_hash_constants.cpp" />
+    <ClCompile Include="libpal\pal_heap_allocator.cpp" />
+    <ClCompile Include="libpal\pal_image.cpp" />
+    <ClCompile Include="libpal\pal_json.cpp" />
+    <ClCompile Include="libpal\pal_md5.cpp" />
+    <ClCompile Include="libpal\pal_memory.cpp" />
+    <ClCompile Include="libpal\pal_memory_stream.cpp" />
+    <ClCompile Include="libpal\pal_page_allocator.cpp" />
+    <ClCompile Include="libpal\pal_path.cpp" />
+    <ClCompile Include="libpal\pal_pipe.cpp" />
+    <ClCompile Include="libpal\pal_pipe_stream.cpp" />
+    <ClCompile Include="libpal\pal_platform.cpp" />
+    <ClCompile Include="libpal\pal_process.cpp" />
+    <ClCompile Include="libpal\pal_profiler.cpp" />
+    <ClCompile Include="libpal\pal_random.cpp" />
+    <ClCompile Include="libpal\pal_scalar.cpp" />
+    <ClCompile Include="libpal\pal_sha1.cpp" />
+    <ClCompile Include="libpal\pal_simd.cpp" />
+    <ClCompile Include="libpal\pal_socket.cpp" />
+    <ClCompile Include="libpal\pal_socket_stream.cpp" />
+    <ClCompile Include="libpal\pal_string.cpp" />
+    <ClCompile Include="libpal\pal_system_heap_allocator.cpp" />
+    <ClCompile Include="libpal\pal_tcp_client.cpp" />
+    <ClCompile Include="libpal\pal_tcp_listener.cpp" />
+    <ClCompile Include="libpal\pal_thread.cpp" />
+    <ClCompile Include="libpal\pal_timer_event.cpp" />
+    <ClCompile Include="libpal\pal_time_line.cpp" />
+    <ClCompile Include="libpal\pal_tokenizer.cpp" />
+    <ClCompile Include="libpal\pal_tracking_allocator.cpp" />
+    <ClCompile Include="libpal\pal_utf8.cpp" />
+    <ClCompile Include="libpal\pal_web_socket_server.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="libpal\libpal.h" />
+    <ClInclude Include="libpal\pal_algorithms.h" />
+    <ClInclude Include="libpal\pal_align.h" />
+    <ClInclude Include="libpal\pal_allocator.h" />
+    <ClInclude Include="libpal\pal_allocator_interface.h" />
+    <ClInclude Include="libpal\pal_array.h" />
+    <ClInclude Include="libpal\pal_atomic.h" />
+    <ClInclude Include="libpal\pal_atomic_inl.h" />
+    <ClInclude Include="libpal\pal_base64.h" />
+    <ClInclude Include="libpal\pal_binary_reader.h" />
+    <ClInclude Include="libpal\pal_blob_array.h" />
+    <ClInclude Include="libpal\pal_command_buffer.h" />
+    <ClInclude Include="libpal\pal_compacting_allocator.h" />
+    <ClInclude Include="libpal\pal_console.h" />
+    <ClInclude Include="libpal\pal_debug.h" />
+    <ClInclude Include="libpal\pal_delegate.h" />
+    <ClInclude Include="libpal\pal_delegate_internal.h" />
+    <ClInclude Include="libpal\pal_endian.h" />
+    <ClInclude Include="libpal\pal_errorcode.h" />
+    <ClInclude Include="libpal\pal_event.h" />
+    <ClInclude Include="libpal\pal_file.h" />
+    <ClInclude Include="libpal\pal_file_stream.h" />
+    <ClInclude Include="libpal\pal_font_rasterizer.h" />
+    <ClInclude Include="libpal\pal_font_rasterizer_stb.h" />
+    <ClInclude Include="libpal\pal_frame_clock.h" />
+    <ClInclude Include="libpal\pal_hash_constants.h" />
+    <ClInclude Include="libpal\pal_hash_functions.h" />
+    <ClInclude Include="libpal\pal_hash_map.h" />
+    <ClInclude Include="libpal\pal_hash_map_cache.h" />
+    <ClInclude Include="libpal\pal_hash_set.h" />
+    <ClInclude Include="libpal\pal_heap_allocator.h" />
+    <ClInclude Include="libpal\pal_ilist.h" />
+    <ClInclude Include="libpal\pal_image.h" />
+    <ClInclude Include="libpal\pal_json.h" />
+    <ClInclude Include="libpal\pal_limits.h" />
+    <ClInclude Include="libpal\pal_list.h" />
+    <ClInclude Include="libpal\pal_md5.h" />
+    <ClInclude Include="libpal\pal_memory.h" />
+    <ClInclude Include="libpal\pal_memory_stream.h" />
+    <ClInclude Include="libpal\pal_mem_blob.h" />
+    <ClInclude Include="libpal\pal_min_heap.h" />
+    <ClInclude Include="libpal\pal_object_id_table.h" />
+    <ClInclude Include="libpal\pal_page_allocator.h" />
+    <ClInclude Include="libpal\pal_pair.h" />
+    <ClInclude Include="libpal\pal_path.h" />
+    <ClInclude Include="libpal\pal_pipe.h" />
+    <ClInclude Include="libpal\pal_pipe_stream.h" />
+    <ClInclude Include="libpal\pal_platform.h" />
+    <ClInclude Include="libpal\pal_pool_allocator.h" />
+    <ClInclude Include="libpal\pal_process.h" />
+    <ClInclude Include="libpal\pal_profiler.h" />
+    <ClInclude Include="libpal\pal_proxy_allocator.h" />
+    <ClInclude Include="libpal\pal_random.h" />
+    <ClInclude Include="libpal\pal_scalar.h" />
+    <ClInclude Include="libpal\pal_sha1.h" />
+    <ClInclude Include="libpal\pal_simd.h" />
+    <ClInclude Include="libpal\pal_simd_impl-inl.h" />
+    <ClInclude Include="libpal\pal_simd_types-inl.h" />
+    <ClInclude Include="libpal\pal_socket.h" />
+    <ClInclude Include="libpal\pal_socket_stream.h" />
+    <ClInclude Include="libpal\pal_spinlock.h" />
+    <ClInclude Include="libpal\pal_stack_allocator.h" />
+    <ClInclude Include="libpal\pal_stream_interface.h" />
+    <ClInclude Include="libpal\pal_string.h" />
+    <ClInclude Include="libpal\pal_string_inl.h" />
+    <ClInclude Include="libpal\pal_system_heap_allocator.h" />
+    <ClInclude Include="libpal\pal_tcp_client.h" />
+    <ClInclude Include="libpal\pal_tcp_listener.h" />
+    <ClInclude Include="libpal\pal_thread.h" />
+    <ClInclude Include="libpal\pal_timer.h" />
+    <ClInclude Include="libpal\pal_timer_event.h" />
+    <ClInclude Include="libpal\pal_time_line.h" />
+    <ClInclude Include="libpal\pal_tokenizer.h" />
+    <ClInclude Include="libpal\pal_tracking_allocator.h" />
+    <ClInclude Include="libpal\pal_types.h" />
+    <ClInclude Include="libpal\pal_unicode_tables.h" />
+    <ClInclude Include="libpal\pal_utf8.h" />
+    <ClInclude Include="libpal\pal_web_socket_server.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D91C69CE-0B9C-4678-8C7F-BFA1625171A1}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>pal</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
+    <NaClAddInVersion>1.0.4643.28692</NaClAddInVersion>
+    <VSNaClSDKRoot>$(NACL_SDK_ROOT)\</VSNaClSDKRoot>
+    <OutDir>$(ProjectDir)$(ToolchainName)\</OutDir>
+    <IntDir>$(ToolchainName)\$(Configuration)\</IntDir>
+    <IncludePath>$(VSNaClSDKRoot)include;</IncludePath>
+    <LibraryPath>$(VSNaClSDKRoot)lib;</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
+    <NaClAddInVersion>1.0.4643.28692</NaClAddInVersion>
+    <VSNaClSDKRoot>$(NACL_SDK_ROOT)\</VSNaClSDKRoot>
+    <OutDir>$(ProjectDir)$(ToolchainName)\</OutDir>
+    <IntDir>$(ToolchainName)\$(Configuration)\</IntDir>
+    <IncludePath>$(VSNaClSDKRoot)include;</IncludePath>
+    <LibraryPath>$(VSNaClSDKRoot)lib;</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
+    <Link>
+      <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
+    <Link>
+      <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NaClAMBase", "NaClAMBase\NaClAMBase.vcxproj", "{7A11484C-421C-452A-9094-616A7407D778}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pal", "pal\pal.vcxproj", "{D91C69CE-0B9C-4678-8C7F-BFA1625171A1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NaClAMTest", "NaClAMTest\NaClAMTest.vcxproj", "{C96506BD-0CB1-4483-AEFB-8733938A3A20}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A11484C-421C-452A-9094-616A7407D778} = {7A11484C-421C-452A-9094-616A7407D778}
+		{D91C69CE-0B9C-4678-8C7F-BFA1625171A1} = {D91C69CE-0B9C-4678-8C7F-BFA1625171A1}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|NaCl = Debug|NaCl
+		Release|NaCl = Release|NaCl
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A11484C-421C-452A-9094-616A7407D778}.Debug|NaCl.ActiveCfg = Debug|NaCl
+		{7A11484C-421C-452A-9094-616A7407D778}.Debug|NaCl.Build.0 = Debug|NaCl
+		{7A11484C-421C-452A-9094-616A7407D778}.Release|NaCl.ActiveCfg = Release|NaCl
+		{7A11484C-421C-452A-9094-616A7407D778}.Release|NaCl.Build.0 = Release|NaCl
+		{D91C69CE-0B9C-4678-8C7F-BFA1625171A1}.Debug|NaCl.ActiveCfg = Debug|NaCl
+		{D91C69CE-0B9C-4678-8C7F-BFA1625171A1}.Debug|NaCl.Build.0 = Debug|NaCl
+		{D91C69CE-0B9C-4678-8C7F-BFA1625171A1}.Release|NaCl.ActiveCfg = Release|NaCl
+		{D91C69CE-0B9C-4678-8C7F-BFA1625171A1}.Release|NaCl.Build.0 = Release|NaCl
+		{C96506BD-0CB1-4483-AEFB-8733938A3A20}.Debug|NaCl.ActiveCfg = Debug|NaCl
+		{C96506BD-0CB1-4483-AEFB-8733938A3A20}.Debug|NaCl.Build.0 = Debug|NaCl
+		{C96506BD-0CB1-4483-AEFB-8733938A3A20}.Release|NaCl.ActiveCfg = Release|NaCl
+		{C96506BD-0CB1-4483-AEFB-8733938A3A20}.Release|NaCl.Build.0 = Release|NaCl
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
