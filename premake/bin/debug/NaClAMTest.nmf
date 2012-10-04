@@ -1,5 +1,5 @@
 {
   "program": {
-    "x86-64": {"url": "NaClAMTest.exe"}
+    "x86-32": {"url": "NaClAMTest.nexe"}
   }
 }

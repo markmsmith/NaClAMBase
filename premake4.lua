@@ -1,7 +1,7 @@
 local nacl_toolchain_path = os.getenv("NACL_SDK_BIN")
-premake.gcc.cc  = nacl_toolchain_path .. "/x86_64-nacl-gcc"
-premake.gcc.cxx = nacl_toolchain_path .. "/x86_64-nacl-g++"
-premake.gcc.ar  = nacl_toolchain_path .. "/x86_64-nacl-ar"
+premake.gcc.cc  = nacl_toolchain_path .. "/i686_-nacl-gcc"
+premake.gcc.cxx = nacl_toolchain_path .. "/i686-nacl-g++"
+premake.gcc.ar  = nacl_toolchain_path .. "/i686-nacl-ar"
 
 solution "NaClAM"
 	configurations { "Debug", "Release" }
@@ -19,12 +19,12 @@ project "pal"
                 defines { "DEBUG" }
                 flags { "Symbols" }
                 targetdir "premake/lib/debug"
-                buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+                buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
         configuration "Release"
                 defines {"NDEBUG"}
                 flags {"Optimize"}
                 targetdir "premake/lib/release"
-                buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+                buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
 
 project "NaClAMBase"
 	kind "StaticLib"
@@ -39,12 +39,12 @@ project "NaClAMBase"
 		defines { "DEBUG" }
 		flags { "Symbols" }
 		targetdir "premake/lib/debug"
-		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
 	configuration "Release"
 		defines {"NDEBUG"}
 		flags {"Optimize"}
 		targetdir "premake/lib/release"
-		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
 
 project "NaClAMTest"
 	kind "ConsoleApp"
@@ -59,10 +59,12 @@ project "NaClAMTest"
 		defines { "DEBUG" }
 		flags { "Symbols" }
 		targetdir "premake/bin/debug"
-		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+		targetextension ".nexe"
+		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
 	configuration "Release"
 		defines {"NDEBUG"}
 		flags {"Optimize"}
 		targetdir "premake/bin/release"
-		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+		targetextension ".nexe"
+		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
 
