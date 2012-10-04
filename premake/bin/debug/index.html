@@ -1,0 +1,27 @@
+<html>
+<head>
+  <title>NaCl AM Test</title>
+  <script type="text/javascript">
+    NaClAMModule = null;
+    aM = null;
+    statusText = 'NO-STATUS';
+
+    function pageDidLoad() {
+      aM = new NaClAM('NaClAM', 'log');
+      aM.enable();
+    }
+  </script>
+  <script type="text/javascript" src="NaClAM.js"></script>
+  <script type="text/javascript" src="NaClAMTest.js"></script>
+</head>
+<body onload="pageDidLoad()">
+<div>
+	<p>To verify that everything is working, open up a console and type: testFloatAdd(100, 5, 8)</p>
+</div>
+<div>
+  <p>Log:</p>
+  <div id="log"></div>
+</div>
+<embed name="nacl_module" id="NaClAM" width=1 height=1 src="NaClAmTest.nmf" type="application/x-nacl" />
+</body>
+</html>
