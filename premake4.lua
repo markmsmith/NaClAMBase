@@ -31,7 +31,6 @@ project "NaClAMBase"
 	language "C++"
 	files { 
 		"NaClAMBase/*.cpp",
-		"src/nacl_bullet_instance.h",
 		}
 	includedirs { "pal" }
 	includedirs { "external/bullet/include", "pal" }
@@ -46,3 +45,24 @@ project "NaClAMBase"
 		flags {"Optimize"}
 		targetdir "premake/lib/release"
 		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+
+project "NaClAMTest"
+	kind "ConsoleApp"
+	language "C++"
+	files {
+		"NaClAMTest/*.cpp",
+		}
+	includedirs { "pal", "." }
+	libdirs { "premake/lib/debug" }
+	links { "NaClAMBase", "pal", "m", "pthread", "ppapi" }
+	configuration "Debug"
+		defines { "DEBUG" }
+		flags { "Symbols" }
+		targetdir "premake/bin/debug"
+		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+	configuration "Release"
+		defines {"NDEBUG"}
+		flags {"Optimize"}
+		targetdir "premake/bin/release"
+		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m64" }
+

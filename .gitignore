@@ -28,3 +28,7 @@ chrome_data
 *.nexe
 
 *.lib
+
+*.make
+
+Makefile
