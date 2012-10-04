@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="floatops.cpp" />
     <ClCompile Include="NaClAMTest.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -20,6 +21,9 @@
     <ProjectReference Include="..\pal\pal.vcxproj">
       <Project>{d91c69ce-0b9c-4678-8c7f-bfa1625171a1}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="floatops.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C96506BD-0CB1-4483-AEFB-8733938A3A20}</ProjectGuid>

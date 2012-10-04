@@ -18,5 +18,13 @@
     <ClCompile Include="NaClAMTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="floatops.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="floatops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
