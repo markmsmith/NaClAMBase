@@ -59,7 +59,7 @@ NaClAM.prototype.handleMesssage_ = function(event) {
 		this.message.header = header;
 	} else if (this.state == STATE_COLLECTING_FRAMES) {
 		this.framesLeft--;
-		this.frames.push(event.data);
+		this.message.frames.push(event.data);
 	}
 	if (this.state == STATE_COLLECTING_FRAMES && this.framesLeft == 0) {
 		// Dispatch message
