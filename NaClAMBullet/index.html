@@ -1,0 +1,24 @@
+<html>
+<head>
+  <title>NaCl AM Bullet</title>
+  <script type="text/javascript">
+    NaClAMModule = null;
+    aM = null;
+    statusText = 'NO-STATUS';
+
+    function pageDidLoad() {
+      aM = new NaClAM('NaClAM', 'log');
+      aM.enable();
+    }
+  </script>
+  <script type="text/javascript" src="NaClAM.js"></script>
+  <script type="text/javascript" src="NaClAMBullet.js"></script>
+</head>
+<body onload="pageDidLoad()">
+<div>
+  <p>Log:</p>
+  <div id="log"></div>
+</div>
+<embed name="nacl_module" id="NaClAM" width=1 height=1 src="NaClAmBullet.nmf"type="application/x-nacl" />
+</body>
+</html>

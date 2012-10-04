@@ -5,7 +5,7 @@
  * moduleInterfaces and moduleInstance are already initialized.
  */
 void NaClAMModuleInit() {
-
+  NaClAMPrintf("Bullet AM Running.");
 }
 
 /**
