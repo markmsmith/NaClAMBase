@@ -26,3 +26,5 @@ Release
 chrome_data
 
 *.nexe
+
+*.lib

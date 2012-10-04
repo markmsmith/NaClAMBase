@@ -71,6 +71,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
+      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
