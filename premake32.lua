@@ -1,5 +1,5 @@
 local nacl_toolchain_path = os.getenv("NACL_SDK_BIN")
-premake.gcc.cc  = nacl_toolchain_path .. "/i686_-nacl-gcc"
+premake.gcc.cc  = nacl_toolchain_path .. "/i686-nacl-gcc"
 premake.gcc.cxx = nacl_toolchain_path .. "/i686-nacl-g++"
 premake.gcc.ar  = nacl_toolchain_path .. "/i686-nacl-ar"
 
@@ -67,4 +67,3 @@ project "NaClAMTest"
 		targetdir "premake/bin/release"
 		targetextension ".nexe"
 		buildoptions { "-std=gnu++0x -fno-rtti -fno-exceptions -m32 -msse2" }
-

@@ -19,7 +19,9 @@ The preferred build system is Visual Studio based.
 premake is offered as a limited alternative, to build run the following:
 
 ```
-premake4 gmake
+premake4 --file=premake32.lua gmake
+make -R
+premake4 --file=premake64.lua gmake
 make -R
 ```
 
