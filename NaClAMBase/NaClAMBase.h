@@ -49,7 +49,7 @@ void NaClAMPrintf(const char*, ...);
  * @param frames An array of arbitrary Strings or ArrayBuffers
  * @param numFrames Length of frames array
  */
-void NaClAMSendMessage(PP_Var header, PP_Var* frames, uint32_t numFrames);
+void NaClAMSendMessage(const PP_Var& header, const PP_Var* frames, uint32_t numFrames);
 
 /* Acceleration Modules implement the following functions: */
 

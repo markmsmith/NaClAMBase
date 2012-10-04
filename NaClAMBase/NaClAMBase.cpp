@@ -27,7 +27,7 @@ static uint64_t microseconds() {
   return tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
-void NaClAMSendMessage(PP_Var header, PP_Var* frames, uint32_t numFrames) {
+void NaClAMSendMessage(const PP_Var& header, const PP_Var* frames, uint32_t numFrames) {
   if (moduleInterfaces.messaging != NULL && moduleInstance != 0) {
     moduleInterfaces.messaging->PostMessage(moduleInstance, header);
     for (uint32_t i = 0; i < numFrames; i++) {
