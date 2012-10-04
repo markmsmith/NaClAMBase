@@ -26,5 +26,5 @@ make -R
 To test:
 
 ```
-python ./http.p
+python ./http.py
 ```
