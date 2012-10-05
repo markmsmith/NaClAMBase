@@ -1,3 +1,4 @@
+#include <string>
 #include "NaClAMBase/NaClAMBase.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
@@ -128,23 +129,20 @@ void NaClAMModuleHeartBeat(uint64_t microseconds) {
 }
 
 void handleLoadScene(const NaClAMMessage& message) {
-  const palJSONObject* root = message.headerRoot;
-  const palJSONObject* items = (*root)["args"];
-  //const palJSONObject* items = (*args)["items"];
+  const Json::Value& root = message.headerRoot;
+  const Json::Value& items = root["args"];
   scene.ResetScene();
-  int children = items->GetNumChildren();
+  int children = items.size();
   btTransform T;
   float m[16];
-  const palArray<palJSONObject*>* kids = items->GetChildArray();
   int count = 0;
   for (int i = 0; i < children; i++) {
     T.setIdentity();
     T.setOrigin(btVector3(0.0, i * 1.0, 0.0));
-    palJSONObject* child = (*kids)[i];
-    if (child->type == kJSONTokenTypeArray) {
+    const Json::Value& child = items[i];
+    if (child.isArray()) {
       for (int j = 0; j < 16; j++) {
-        palJSONObject* e = (*child)[j];
-        m[j] = e->GetAsFloat();
+        m[j] = child[j].asFloat();
       }
       T.setFromOpenGLMatrix(&m[0]);
       scene.AddBox(T, 1.0);
@@ -153,21 +151,21 @@ void handleLoadScene(const NaClAMMessage& message) {
       NaClAMPrintf("Unknown Scene Object");
     }
   }
+  NaClAMPrintf("Added %d objects", count);
 }
 
 void handleStepScene(const NaClAMMessage& message) {
   if (scene.dynamicsWorld == NULL ||
       scene.dynamicsWorld->getNumCollisionObjects() == 1) {
-        // No scene, just send a reply
-    palDynamicString jsonMessage;
-    palJSONBuilder builder;
-    builder.Start(&jsonMessage);
-    builder.PushObject();
-    builder.Map("frames", 0, true);
-    builder.Map("request", message.requestId, true);
-    builder.Map("cmd", "noscene", false);
-    builder.PopObject();
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.C(), jsonMessage.GetLength());
+    // No scene, just send a reply
+    Json::Value root;
+    Json::StyledWriter writer;
+    root["frames"] = Json::Value(0);
+    root["request"] = Json::Value(message.requestId);
+    root["cmd"] = Json::Value("noscene");
+    std::string jsonMessage = writer.write(root);
+    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+      jsonMessage.length());
     NaClAMSendMessage(msgVar, NULL, 0);
     moduleInterfaces.var->Release(msgVar);
     return;
@@ -176,15 +174,14 @@ void handleStepScene(const NaClAMMessage& message) {
   scene.Step();
   {
     // Build headers
-    palDynamicString jsonMessage;
-    palJSONBuilder builder;
-    builder.Start(&jsonMessage);
-    builder.PushObject();
-    builder.Map("frames", 1, true);
-    builder.Map("request", message.requestId, true);
-    builder.Map("cmd", "sceneupdate", false);
-    builder.PopObject();
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.C(), jsonMessage.GetLength());
+    Json::Value root;
+    Json::StyledWriter writer;
+    root["frames"] = Json::Value(1);
+    root["request"] = Json::Value(message.requestId);
+    root["cmd"] = Json::Value("sceneupdate");
+    std::string jsonMessage = writer.write(root);
+    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+      jsonMessage.length());
 
     // Build transform frame
     int numObjects = scene.dynamicsWorld->getNumCollisionObjects();
@@ -215,9 +212,9 @@ void handleStepScene(const NaClAMMessage& message) {
  * @param message A complete message sent from JS
  */
 void NaClAMModuleHandleMessage(const NaClAMMessage& message) {
-  if (message.cmdString.Equals("loadscene")) {
+  if (message.cmdString.compare("loadscene") == 0) {
     handleLoadScene(message);
-  } else if (message.cmdString.Equals("stepscene")) {
+  } else if (message.cmdString.compare("stepscene") == 0) {
     handleStepScene(message);
   }
 }

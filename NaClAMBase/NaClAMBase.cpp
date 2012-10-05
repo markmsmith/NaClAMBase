@@ -2,9 +2,8 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
-
 #include <pthread.h>
-
+#include <string>
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_module.h"
 #include "ppapi/c/pp_var.h"
@@ -13,7 +12,7 @@
 #include "ppapi/c/ppp_messaging.h"
 #include "ppapi/c/ppp_input_event.h"
 #include <sys/time.h>
-#include "libpal/libpal.h"
+#include "json/json.h"
 #include "NaClAMBase.h"
 #include "NaClAMMessageCollector.h"
 
@@ -37,21 +36,15 @@ void NaClAMSendMessage(const PP_Var& header, const PP_Var* frames, uint32_t numF
 }
 
 static void messagePrint(const char* str) {
-  palDynamicString jsonMessage;
-  palJSONBuilder builder;
-  builder.Start(&jsonMessage);
-  builder.PushObject();
-  builder.Map("frames", 0, true);
-  builder.Map("request", -1, true);
-  builder.Map("cmd", "NaClAMPrint", true);
-  builder.Map("print", str, false);
-  builder.PopObject();
-  // JSON can't have new lines :(
-  jsonMessage.SearchAndReplace(0, '\n', ' ');
-
-  PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.C(),
-                                                    jsonMessage.GetLength());
-
+  Json::StyledWriter writer;
+  Json::Value root;
+  root["frames"] = Json::Value(0);
+  root["request"] = Json::Value(-1);
+  root["cmd"] = Json::Value("NaClAMPrint");
+  root["print"] = Json::Value(str);
+  std::string jsonMessage = writer.write(root);
+  PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(),
+                                                    jsonMessage.length());
   NaClAMSendMessage(msgVar, NULL, 0);
   moduleInterfaces.var->Release(msgVar);
 }
@@ -84,7 +77,6 @@ static PP_Bool Instance_DidCreate(PP_Instance instance,
                                   const char* argn[],
                                   const char* argv[]) {
   moduleInstance = instance;
-  palStartup(NULL);
   NaClAMModuleInit();
   messageCollector.Init();
   heartBeat(NULL, 0);

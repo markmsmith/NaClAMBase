@@ -18,9 +18,6 @@
     <ProjectReference Include="..\NaClAMBase\NaClAMBase.vcxproj">
       <Project>{7a11484c-421c-452a-9094-616a7407d778}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\pal\pal.vcxproj">
-      <Project>{d91c69ce-0b9c-4678-8c7f-bfa1625171a1}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="floatops.h" />
@@ -62,7 +59,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ppapi_cpp;ppapi</AdditionalDependencies>
-      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
@@ -73,7 +70,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
-      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

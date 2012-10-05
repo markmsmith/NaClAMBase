@@ -8,9 +8,8 @@ class NaClAMMessageCollector {
   int _framesLeft;
   bool _messageReady;
   NaClAMMessage _preparedMessage;
-  palJSONObjectParser _parser;
 
-  int ParseHeader(palMemBlob blob);
+  int ParseHeader(const char* str, uint32_t len);
   void HandleString(PP_Var message);
   void HandleBuffer(PP_Var buffer);
 public:

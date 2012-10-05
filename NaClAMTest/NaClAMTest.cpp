@@ -33,17 +33,15 @@ void handleFloatSum(const NaClAMMessage& message) {
 
   // Send reply
   {
-    palDynamicString jsonMessage;
-    palJSONBuilder builder;
-    builder.Start(&jsonMessage);
-    builder.PushObject();
-    builder.Map("frames", 0, true);
-    builder.Map("request", message.requestId, true);
-    builder.Map("cmd", "reply", true);
-    builder.Map("sum", sum, false);
-    builder.PopObject();
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.C(), 
-      jsonMessage.GetLength());
+    Json::Value root;
+    Json::StyledWriter writer;
+    root["frames"] = Json::Value(0);
+    root["request"] = Json::Value(message.requestId);
+    root["cmd"] = Json::Value("floatsum");
+    root["sum"] = Json::Value(sum);
+    std::string jsonMessage = writer.write(root);
+    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+                                                      jsonMessage.length());
     NaClAMSendMessage(msgVar, NULL, 0);
     moduleInterfaces.var->Release(msgVar);
   }
@@ -70,16 +68,14 @@ void handleSubFloats(const NaClAMMessage& message) {
 
   // Send reply
   {
-    palDynamicString jsonMessage;
-    palJSONBuilder builder;
-    builder.Start(&jsonMessage);
-    builder.PushObject();
-    builder.Map("frames", 1, true);
-    builder.Map("request", message.requestId, true);
-    builder.Map("cmd", "reply", false);
-    builder.PopObject();
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.C(), 
-      jsonMessage.GetLength());
+    Json::Value root;
+    Json::StyledWriter writer;
+    root["frames"] = Json::Value(1);
+    root["request"] = Json::Value(message.requestId);
+    root["cmd"] = Json::Value("floatsub");
+    std::string jsonMessage = writer.write(root);
+    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+      jsonMessage.length());
     NaClAMSendMessage(msgVar, &message.frames[0], 1);
     moduleInterfaces.var->Release(msgVar);
   }
@@ -106,16 +102,14 @@ void handleAddFloats(const NaClAMMessage& message) {
 
   // Send reply
   {
-    palDynamicString jsonMessage;
-    palJSONBuilder builder;
-    builder.Start(&jsonMessage);
-    builder.PushObject();
-    builder.Map("frames", 1, true);
-    builder.Map("request", message.requestId, true);
-    builder.Map("cmd", "reply", false);
-    builder.PopObject();
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.C(), 
-      jsonMessage.GetLength());
+    Json::Value root;
+    Json::StyledWriter writer;
+    root["frames"] = Json::Value(1);
+    root["request"] = Json::Value(message.requestId);
+    root["cmd"] = Json::Value("floatadd");
+    std::string jsonMessage = writer.write(root);
+    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+      jsonMessage.length());
     NaClAMSendMessage(msgVar, &message.frames[0], 1);
     moduleInterfaces.var->Release(msgVar);
   }
@@ -126,13 +120,13 @@ void handleAddFloats(const NaClAMMessage& message) {
  * @param message A complete message sent from JS
  */
 void NaClAMModuleHandleMessage(const NaClAMMessage& message) {
-  if (message.cmdString.Equals("floatsum")) {
+  if (message.cmdString.compare("floatsum") == 0) {
     handleFloatSum(message);
-  } else if (message.cmdString.Equals("subfloatarrays")) {
+  } else if (message.cmdString.compare("subfloatarrays") == 0) {
     handleSubFloats(message);
-  } else if (message.cmdString.Equals("addfloatarrays")) {
+  } else if (message.cmdString.compare("addfloatarrays") == 0) {
     handleAddFloats(message);
   } else {
-    NaClAMPrintf("Got message I don't understand: %s", message.cmdString.C());
+    NaClAMPrintf("Got message I don't understand: %s", message.cmdString.c_str());
   }
 }

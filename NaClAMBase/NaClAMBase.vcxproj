@@ -11,18 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="jsoncpp.cpp" />
     <ClCompile Include="NaClAMBase.cpp" />
     <ClCompile Include="NaClAMMessageCollector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="json\json-forwards.h" />
+    <ClInclude Include="json\json.h" />
     <ClInclude Include="NaClAMBase.h" />
     <ClInclude Include="NaClAMMessage.h" />
     <ClInclude Include="NaClAMMessageCollector.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\pal\pal.vcxproj">
-      <Project>{d91c69ce-0b9c-4678-8c7f-bfa1625171a1}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7A11484C-421C-452A-9094-616A7407D778}</ProjectGuid>

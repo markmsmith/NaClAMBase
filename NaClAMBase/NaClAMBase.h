@@ -15,7 +15,7 @@
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/ppb_var_array_buffer.h"
 #include "ppapi/c/ppp_instance.h"
-
+#include "json/json.h"
 #include "NaClAMMessage.h"
 
 /**

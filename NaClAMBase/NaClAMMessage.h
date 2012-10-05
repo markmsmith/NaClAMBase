@@ -1,24 +1,27 @@
 #pragma once
 
-#include "libpal/libpal.h"
+#include <string>
+#include "json/json.h"
 
 #define MAX_FRAMES 16
 struct NaClAMMessage {
-  const palJSONObject* headerRoot;
-  palDynamicString cmdString;
+  Json::Value headerRoot;
+  std::string cmdString;
   int requestId;
   PP_Var headerMessage;
   PP_Var frames[MAX_FRAMES];
   int frameCount;
 
   NaClAMMessage() {
-    headerRoot = NULL;
     frameCount = 0;
+    cmdString = "";
+    headerRoot.clear();
   }
 
   void reset() {
-    headerRoot = NULL;
     frameCount = 0;
+    cmdString = "";
+    headerRoot.clear();
   }
 
   void AppendFrame(PP_Var frame) {   

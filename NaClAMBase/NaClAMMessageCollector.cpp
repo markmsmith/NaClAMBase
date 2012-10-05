@@ -18,7 +18,6 @@ void NaClAMMessageCollector::Init() {
   _stateCode = STATE_CODE_WAITING_FOR_HEADER;
   _framesLeft = 0;
   _messageReady = false;
-  _parser = palJSONObjectParser(g_DefaultHeapAllocator);
 }
 
 void NaClAMMessageCollector::Collect( PP_Var message ) {
@@ -51,52 +50,35 @@ void NaClAMMessageCollector::ClearMessage() {
   _messageReady = false;
 }
 
-int NaClAMMessageCollector::ParseHeader(palMemBlob blob) {
-  if (blob.GetBufferSize() == 0) {
+int NaClAMMessageCollector::ParseHeader(const char* str, uint32_t len) {
+  if (len == 0) {
     return -1;
   }
-  _parser.Parse(&blob);
-  palJSONObject* root = _parser.GetRoot();
-  if (root->type == 0) {
-    _parser.Clear();
+  Json::Reader reader;
+  bool r;
+  r = reader.parse(str, str+len, _preparedMessage.headerRoot);
+  if (r == false) {
     return -2;
   }
-  if (root->type != kJSONTokenTypeMap) {
-    _parser.Clear();
-    NaClAMPrintf("NaCl AM Error: Header was not a map.");
+  Json::Value& root = _preparedMessage.headerRoot;
+  if (root.isMember("cmd") == false) {
+    NaClAMPrintf("NaCl AM Error: Header did not contain a cmd");
     return -3;
   }
-  palJSONObject* cmd = (*root)["cmd"];
-  if (!cmd) {
-    NaClAMPrintf("NaCl AM Error: Header did not contain a cmd");
+  const Json::Value& cmd = root["cmd"];
+  if (root.isMember("request") == false) {
+    NaClAMPrintf("NaCl AM Error: Header cmd was not a string");
     return -4;
   }
-  if (cmd->type != kJSONTokenTypeValueString) {
-    NaClAMPrintf("NaCl AM Error: Header cmd was not a string");
+  const Json::Value& request = root["request"];
+  if (root.isMember("frames") == false) {
+    NaClAMPrintf("NaCl AM Error: Header did not contain a frames");
     return -5;
   }
-  palJSONObject* request = (*root)["request"];
-  if (!request) {
-    NaClAMPrintf("NaCl AM Error: Header did contain a request");
-    return -6;
-  }
-  if (request->type != kJSONTokenTypeValueNumber) {
-    NaClAMPrintf("NaCl AM Error: Header request was not an int");
-    return -7;
-  }
-  palJSONObject* frames = (*root)["frames"];
-  if (!frames) {
-    NaClAMPrintf("NaCl AM Error: Header did not contain a frames");
-    return -8;
-  }
-  if (frames->type != kJSONTokenTypeValueNumber) {
-    NaClAMPrintf("NaCl AM Error: Header frames was not an int");
-    return -9;
-  }
-  _preparedMessage.headerRoot = root;
-  _preparedMessage.requestId = request->GetAsInt();
-  cmd->GetAsDynamicString(&_preparedMessage.cmdString);
-  return frames->GetAsInt();
+  const Json::Value& frames = root["frames"];
+  _preparedMessage.requestId = request.asInt();
+  _preparedMessage.cmdString = cmd.asString();
+  return frames.asInt();
 }
 
 void NaClAMMessageCollector::HandleString(PP_Var message) {
@@ -108,7 +90,7 @@ void NaClAMMessageCollector::HandleString(PP_Var message) {
       return;
     }
     _preparedMessage.headerMessage = message;
-    int frames = ParseHeader(palMemBlob((void*)str, len));
+    int frames = ParseHeader(str, len);
     _stateCode = STATE_CODE_COLLECTING_FRAMES;
     if (frames >= 0) {
       _framesLeft = frames;
