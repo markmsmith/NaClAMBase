@@ -58,6 +58,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ppapi_cpp;ppapi</AdditionalDependencies>
@@ -68,6 +69,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>

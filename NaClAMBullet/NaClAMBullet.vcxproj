@@ -39,9 +39,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
     <LinkIncremental>true</LinkIncremental>
+    <NaClAddInVersion>1.0.4643.28692</NaClAddInVersion>
+    <VSNaClSDKRoot>$(NACL_SDK_ROOT)\</VSNaClSDKRoot>
+    <OutDir>$(ProjectDir)$(ToolchainName)\</OutDir>
+    <IntDir>$(ToolchainName)\$(Configuration)\</IntDir>
+    <IncludePath>$(VSNaClSDKRoot)include;</IncludePath>
+    <LibraryPath>$(VSNaClSDKRoot)lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
     <LinkIncremental>false</LinkIncremental>
+    <NaClAddInVersion>1.0.4643.28692</NaClAddInVersion>
+    <VSNaClSDKRoot>$(NACL_SDK_ROOT)\</VSNaClSDKRoot>
+    <OutDir>$(ProjectDir)$(ToolchainName)\</OutDir>
+    <IntDir>$(ToolchainName)\$(Configuration)\</IntDir>
+    <IncludePath>$(VSNaClSDKRoot)include;</IncludePath>
+    <LibraryPath>$(VSNaClSDKRoot)lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">
     <ClCompile>
@@ -50,13 +62,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal;$(ProjectDir)/bullet-trunk-rev2600/src</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
@@ -68,15 +82,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/pal;$(ProjectDir)/bullet-trunk-rev2600/src</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>foo C:\workspace\NaClAMBase\NaClAMBase\newlib\NaClAMBase.a C:\workspace\NaClAMBase\pal\newlib\pal.a C:\workspace\NaClAMBase\NaClAMBullet\bullet-trunk-rev2600\lib\BulletDynamics_vs2010.lib C:\workspace\NaClAMBase\NaClAMBullet\bullet-trunk-rev2600\lib\BulletCollision_vs2010.lib C:\workspace\NaClAMBase\NaClAMBullet\bullet-trunk-rev2600\lib\LinearMath_vs2010.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>ppapi_cpp;ppapi;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

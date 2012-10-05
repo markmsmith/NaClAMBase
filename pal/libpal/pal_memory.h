@@ -41,7 +41,7 @@ void operator delete(void* p, palAllocatorInterface* allocator);
 void* operator new(size_t size, void* p);
 
 // standard new, delete operators
-void* operator new(size_t size);
-void operator delete(void* p);
-void* operator new[](size_t size);
-void operator delete[](void* p);
+//void* operator new(size_t size);
+//void operator delete(void* p);
+//void* operator new[](size_t size);
+//void operator delete[](void* p);

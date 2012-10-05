@@ -44,6 +44,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">..\..\lib\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">obj\x32\Debug\BulletCollision\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">BulletCollision_vs2010_debug</TargetName>
+    <NaClAddInVersion Condition="'$(Configuration)|$(Platform)'=='Debug|NaCl'">1.0.4643.28692</NaClAddInVersion>
+    <NaClAddInVersion Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">1.0.4643.28692</NaClAddInVersion>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
     <ClCompile>

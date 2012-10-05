@@ -63,6 +63,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)\pal</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|NaCl'">
@@ -72,6 +73,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)\pal</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=gnu++0x %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

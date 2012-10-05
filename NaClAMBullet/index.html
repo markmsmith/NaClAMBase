@@ -7,18 +7,20 @@
     statusText = 'NO-STATUS';
 
     function pageDidLoad() {
-      aM = new NaClAM('NaClAM', 'log');
+      aM = new NaClAM('NaClAM');
       aM.enable();
+      init();
+      NaClAMBulletStartScene(sceneDescription);
+      animate();
     }
   </script>
   <script type="text/javascript" src="NaClAM.js"></script>
   <script type="text/javascript" src="NaClAMBullet.js"></script>
+  <script type="text/javascript" src="three.min.js"></script>
+  <script type="text/javascript" src="scene.js"></script>
 </head>
 <body onload="pageDidLoad()">
-<div>
-  <p>Log:</p>
-  <div id="log"></div>
-</div>
 <embed name="nacl_module" id="NaClAM" width=1 height=1 src="NaClAmBullet.nmf"type="application/x-nacl" />
 </body>
+  
 </html>
