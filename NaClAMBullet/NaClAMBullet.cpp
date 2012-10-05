@@ -7,8 +7,10 @@ class BulletScene {
 public:
   btCollisionShape* boxShape;
   btCollisionShape* groundShape;
-  
-
+  int pickedObjectIndex;
+  btRigidBody* pickedBody;
+  btPoint2PointConstraint* pickConstraint;
+  float pickingDistance;
   btDynamicsWorld* dynamicsWorld;
   btCollisionConfiguration* collisionConfiguration;
   btCollisionDispatcher* dispatcher;
@@ -26,6 +28,53 @@ public:
   void Init() {
     boxShape = new btBoxShape(btVector3(0.50f, 0.50f, 0.50f));
     groundShape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0.0);
+    pickConstraint = NULL;
+    pickedBody = NULL;
+  }
+
+  void removePickingConstraint() {
+    if (pickConstraint && dynamicsWorld)
+    {
+      dynamicsWorld->removeConstraint(pickConstraint);
+      delete pickConstraint;
+      pickedBody->forceActivationState(ACTIVE_TAG);
+      pickedBody->setDeactivationTime( 0.f );
+    }
+    pickConstraint = NULL;
+    pickedBody = NULL;
+  }
+
+  void addPickingConstraint(const btVector3& rayFrom, const btVector3& rayTo) {
+    if (!dynamicsWorld) {
+      return;
+    }
+    removePickingConstraint();
+    if (pickedObjectIndex <= 0 || pickedObjectIndex >= dynamicsWorld->getNumCollisionObjects()) {
+      return;
+    }
+    pickedBody = btRigidBody::upcast(dynamicsWorld->getCollisionObjectArray()[pickedObjectIndex]);
+    btVector3 pickPos = rayTo;
+    btVector3 localPivot = pickedBody->getCenterOfMassTransform().inverse() * pickPos;
+    pickConstraint = new btPoint2PointConstraint(*pickedBody,localPivot);
+    pickedBody->setActivationState(DISABLE_DEACTIVATION);
+    dynamicsWorld->addConstraint(pickConstraint,true);
+    pickingDistance = (rayFrom-rayTo).length();
+    pickConstraint->m_setting.m_impulseClamp = 3.0f;
+    pickConstraint->m_setting.m_tau = 0.001f;
+  }
+
+  void movePickingConstraint(const btVector3& rayFrom, const btVector3& rayTo) {
+    if (pickConstraint)
+    {
+      //keep it at the same picking distance
+      btVector3 oldPivotInB = pickConstraint->getPivotInB();
+      btVector3 newPivotB;
+      btVector3 dir = rayTo-rayFrom;
+      dir.normalize();
+      dir *= pickingDistance;
+      newPivotB = rayFrom + dir;
+      pickConstraint->setPivotB(newPivotB);
+    }
   }
 
   void EmptyScene() {
@@ -40,6 +89,7 @@ public:
         dynamicsWorld->removeCollisionObject(obj);
         delete obj;
       }
+      removePickingConstraint();
     }
     if (dynamicsWorld) {
       delete dynamicsWorld;
@@ -184,6 +234,18 @@ void handleStepScene(const NaClAMMessage& message) {
     moduleInterfaces.var->Release(msgVar);
     return;
   }
+  {
+    Json::Value rayTo = message.headerRoot["args"]["rayTo"];
+    float x = rayTo[0].asFloat();
+    float y = rayTo[1].asFloat();
+    float z = rayTo[2].asFloat();
+    Json::Value rayFrom = message.headerRoot["args"]["rayFrom"];
+    float cx = rayFrom[0].asFloat();
+    float cy = rayFrom[1].asFloat();
+    float cz = rayFrom[2].asFloat();
+    scene.movePickingConstraint(btVector3(cx, cy, cz), btVector3(x,y,z));
+  }
+
   // Do work
   scene.Step();
   {
@@ -221,6 +283,37 @@ void handleStepScene(const NaClAMMessage& message) {
   }
 }
 
+void handlePickObject(const NaClAMMessage& message) {
+  if (!scene.dynamicsWorld) {
+    return;
+  }
+  const Json::Value& root = message.headerRoot;
+  const Json::Value& args = root["args"];
+  const Json::Value& objectTableIndex = args["index"];
+  const Json::Value& pos = args["pos"];
+  const Json::Value& cpos = args["cpos"];
+  float x = pos[0].asFloat();
+  float y = pos[1].asFloat();
+  float z = pos[2].asFloat();
+  float cx = cpos[0].asFloat();
+  float cy = cpos[1].asFloat();
+  float cz = cpos[2].asFloat();
+  int index = objectTableIndex.asInt();
+  index++;
+  if (index < 0 || index >= scene.dynamicsWorld->getNumCollisionObjects()) {
+    scene.pickedObjectIndex = -1;
+    return;
+  }
+  scene.pickedObjectIndex = index;
+  scene.addPickingConstraint(btVector3(cx, cy, cz), btVector3(x,y,z));
+  NaClAMPrintf("Picked %d\n", scene.pickedObjectIndex);
+}
+
+void handleDropObject(const NaClAMMessage& message) {
+  scene.removePickingConstraint();
+  NaClAMPrintf("Dropped %d\n", scene.pickedObjectIndex);
+}
+
 /**
  * This function is called for each message received from JS
  * @param message A complete message sent from JS
@@ -230,5 +323,9 @@ void NaClAMModuleHandleMessage(const NaClAMMessage& message) {
     handleLoadScene(message);
   } else if (message.cmdString.compare("stepscene") == 0) {
     handleStepScene(message);
+  } else if (message.cmdString.compare("pickobject") == 0) {
+    handlePickObject(message);
+  } else if (message.cmdString.compare("dropobject") == 0) {
+    handleDropObject(message);
   }
 }

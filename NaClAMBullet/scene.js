@@ -2,9 +2,13 @@ var container, stats;
 			var camera, controls, scene, projector, renderer;
 			var objects = [], plane;
 
+			var hold = false;
+			var holdObjectIndex = -1;
+
 			var mouse = new THREE.Vector2(),
 			offset = new THREE.Vector3(),
 			INTERSECTED, SELECTED;
+			
 
 			var sceneDescription = [];
 			function init() {
@@ -48,7 +52,7 @@ var container, stats;
 
 				var geometry = new THREE.CubeGeometry( 1, 1, 1 );
 				
-				for ( var i = 0; i < 200; i ++ ) {
+				for ( var i = 0; i < 400; i ++ ) {
 
 					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
@@ -84,6 +88,7 @@ var container, stats;
 					object.castShadow = true;
 					object.receiveShadow = true;
 					object.matrixAutoUpdate = false;
+					object.objectTableIndex = i;
 					scene.add(object);
 					objects.push(object);
 				}
@@ -113,23 +118,63 @@ var container, stats;
 
 				//
 
+				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				window.addEventListener( 'resize', onWindowResize, false );
-
+				window.addEventListener('keydown', onDocumentKeyDown, false);
+				window.addEventListener('keyup', onDocumentKeyUp, false);
 			}
 
 			function onWindowResize() {
-
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
-
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				controls.handleResize();
 			}
 
+			function onDocumentKeyDown(event) {
+				if (event.keyCode == 72) {
+					if (SELECTED != undefined) {
+						return;
+					}
+					hold = true;
+					var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+					projector.unprojectVector( vector, camera );
+					var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+					var intersects = ray.intersectObjects( objects );
+					if (intersects.length > 0) {
+						if (intersects[0].object != plane) {
+							SELECTED = intersects[0].object;
+							console.log(SELECTED.objectTableIndex);
+							NaClAMBulletPickObject(SELECTED.objectTableIndex, camera.position, intersects[0].point);
+						}	
+					}
+				}
+			}
+
+			function onDocumentKeyUp(event) {
+				if (event.keyCode == 72) {
+					hold = false;
+					SELECTED = undefined;
+					NaClAMBulletDropObject();
+				}	
+			}
+
+			function onDocumentMouseMove( event ) {
+				event.preventDefault();
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+				projector.unprojectVector( vector, camera );
+				offset.x = vector.x;
+				offset.y = vector.y;
+				offset.z = vector.z;
+			}
 
 			//
 
 			function animate() {
+				window.requestAnimationFrame(animate);
+				aM.sendMessage('stepscene', {rayFrom: [camera.position.x, camera.position.y, camera.position.z], rayTo: [offset.x, offset.y, offset.z]});
 				render();
 			}
 

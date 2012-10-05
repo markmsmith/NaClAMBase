@@ -5,19 +5,25 @@ function NaClAMBulletInit() {
 	aM.addEventListener('sceneupdate', NaClAMBulletStepSceneHandler);
 }
 
+function NaClAMBulletLoadScene(sceneDescription) {
+	aM.sendMessage('loadscene', sceneDescription);
+}
+
 function NaClAMBulletSceneLoadedHandler(msg) {
 	console.log('Scene loaded.');
 	console.log('Scene object count = ' + msg.header.sceneobjectcount);
 }
 
-function NaClAMBulletLoadScene(sceneDescription) {
-	aM.sendMessage('loadscene', sceneDescription);
-	aM.sendMessage('stepscene', {});
+function NaClAMBulletPickObject(objectTableIndex, cameraPos, hitPos) {
+	aM.sendMessage('pickobject', {index: objectTableIndex, cpos: [cameraPos.x, cameraPos.y, cameraPos.z], pos: [hitPos.x,hitPos.y,hitPos.z]});
+}
+
+function NaClAMBulletDropObject() {
+	aM.sendMessage('dropobject', {});
 }
 
 function NaClAMBulletStepSceneHandler(msg) {
 	// Step the scene
-	aM.sendMessage('stepscene', {});
 	var i;
 	var j;
 	var numTransforms = 0;
@@ -30,5 +36,4 @@ function NaClAMBulletStepSceneHandler(msg) {
 			}
 		}	
 	}
-	animate();
 }
