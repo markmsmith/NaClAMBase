@@ -14,7 +14,7 @@ function NaClAM(embedId) {
 	this.message = new NaClAMMessage();
 	this.state = 0;
 	this.framesLeft = 0;
-	this.callbacks_ = Object.create(null);
+	this.listeners_ = Object.create(null);
 	this.handleMesssage_ = this.handleMesssage_.bind(this);
 }
 
@@ -56,14 +56,8 @@ NaClAM.prototype.handleMesssage_ = function(event) {
 		this.message.frames.push(event.data);
 	}
 	if (this.state == STATE_COLLECTING_FRAMES && this.framesLeft == 0) {
-		// Dispatch message
-		var requestId = this.message.header['request'];
-		var callback = this.callbacks_[requestId];
-		if (callback) {
-			callback(this.message);
-			this.message.reset();
-			delete this.callbacks_[requestId];
-		}
+		this.dispatchEvent(this.message);
+		this.message.reset();
 		this.state = STATE_WAITING_FOR_HEADER;
  	}
 }
@@ -157,6 +151,63 @@ NaClAM.prototype.sendMessage = function(cmdName, arguments, frames) {
 	return this.requestId;
 }
 
-NaClAM.prototype.addEventListener = function(id, callback) {
-	this.callbacks_[id] = callback;
+/** 
+ * Adds an event listener to this Acceleration Module.
+ * @param {string} type The name of the command.
+ * @param handler The handler for the cmomand. This is called whenever the command is received.
+ */
+NaClAM.prototype.addEventListener = function(type, handler) {
+	if (!this.listeners_) {
+		this.listeners_ = Object.create(null);
+	}
+	if (!(type in this.listeners_)) {
+		this.listeners_[type] = [handler];
+	} else {
+		var handlers = this.listeners_[type];
+		if (handlers.indexOf(handler) < 0) {
+			handlers.push(handler);
+		}
+	}
+}
+
+/** 
+ * Removes an event listener from this Acceleration Module.
+ * @param {string} type The name of the command.
+ * @param handler The handler for the cmomand. This is called whenever the command is received.
+ */
+NaClAM.prototype.removeEventListener = function(type, handler) {
+	if (!this.listeners_) {
+		// No listeners
+		return;
+	}
+	if (type in this.listeners_) {
+		var handlers = this.listeners_[type];
+		var index = handlers.indexOf(handler);
+		if (index >= 0) {
+			if (handlers.length == 1) {
+				// Listeners list would be empty, delete it
+				delete this.listeners_[type];
+			} else {
+				// Remove the handler
+				handlers.splice(index, 1);
+			}
+		}
+	}
+}
+
+/**
+ * 
+ */
+NaClAM.prototype.dispatchEvent = function(event) {
+	if (!this.listeners_) {
+		return true;
+	}
+	var type = event.header.cmd;
+	if (type in this.listeners_) {
+		// Make a copy to walk over
+		var handlers = this.listeners_[type].concat();
+		for (var i = 0, handler; handler = handlers[i]; i++) {
+			handler.call(this, event);
+		}
+	}
 }

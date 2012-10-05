@@ -151,7 +151,21 @@ void handleLoadScene(const NaClAMMessage& message) {
       NaClAMPrintf("Unknown Scene Object");
     }
   }
-  NaClAMPrintf("Added %d objects", count);
+  // Scene created.
+  {
+    Json::Value root;
+    Json::StyledWriter writer;
+    root["frames"] = Json::Value(0);
+    root["request"] = Json::Value(message.requestId);
+    root["cmd"] = Json::Value("sceneloaded");
+    root["sceneobjectcount"] = Json::Value(count);
+    std::string jsonMessage = writer.write(root);
+    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+      jsonMessage.length());
+    NaClAMSendMessage(msgVar, NULL, 0);
+    moduleInterfaces.var->Release(msgVar);
+  }
+  
 }
 
 void handleStepScene(const NaClAMMessage& message) {

@@ -48,13 +48,13 @@ var container, stats;
 
 				var geometry = new THREE.CubeGeometry( 1, 1, 1 );
 				
-				for ( var i = 0; i < 100; i ++ ) {
+				for ( var i = 0; i < 200; i ++ ) {
 
 					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
 					object.material.ambient = object.material.color;
 
-					object.position.x = Math.random() * 50 - 25;
+					object.position.x = Math.random() * 10 - 25;
 					object.position.y = Math.random() * 50 + 1;
 					object.position.z = Math.random() * 40 - 20;
 
@@ -130,7 +130,6 @@ var container, stats;
 			//
 
 			function animate() {
-				requestAnimationFrame(NaClAMBulletStepScene);
 				render();
 			}
 

@@ -1,19 +1,20 @@
-
 function testFloatSum(num) {
 	var buff = new Float32Array(num+1);
 	var i;
 	for (i = 0; i < num+1; i++) {
 		buff[i] = i;
 	}
-	var requestId = aM.sendMessage('floatsum', {}, [buff.buffer]);
-	aM.addEventListener(requestId, function(msg) {
+	aM.sendMessage('floatsum', {}, [buff.buffer]);
+	var handler = function(msg) {
 		var correctResult = num*(num+1)/2;
 		var amResult = msg['header']['sum'];
 		if (correctResult != amResult) {
 			console.log('Error: Acceleration Module gave wrong result.');
 		}
 		console.log('Sum from 0 to ' + num + ' = ' + msg['header']['sum']);
-	});
+		aM.removeEventListener('floatsum', handler);
+	}
+	aM.addEventListener('floatsum', handler);
 }
 
 function testFloatAdd(num, a, b) {
@@ -24,8 +25,8 @@ function testFloatAdd(num, a, b) {
 		buff1[i] = a;
 		buff2[i] = b;
 	}
-	var requestId = aM.sendMessage('addfloatarrays', {}, [buff1.buffer, buff2.buffer]);
-	aM.addEventListener(requestId, function(msg) {
+	aM.sendMessage('addfloatarrays', {}, [buff1.buffer, buff2.buffer]);
+	var handler = function(msg) {
 		var result = new Float32Array(msg.frames[0]);
 		var j;
 		var correctResult = a + b;
@@ -38,7 +39,9 @@ function testFloatAdd(num, a, b) {
 		if (j == result.length) {
 			console.log('Arrays correctly added. Each element = ' + correctResult);
 		}
-	});
+		aM.removeEventListener('floatadd', handler);
+	};
+	aM.addEventListener('floatadd', handler);
 }
 
 function testFloatSub(num, a, b) {
@@ -49,8 +52,8 @@ function testFloatSub(num, a, b) {
 		buff1[i] = a;
 		buff2[i] = b;
 	}
-	var requestId = aM.sendMessage('subfloatarrays', {}, [buff1.buffer, buff2.buffer]);
-	aM.addEventListener(requestId, function(msg) {
+	aM.sendMessage('subfloatarrays', {}, [buff1.buffer, buff2.buffer]);
+	var handler = function(msg) {
 		var result = new Float32Array(msg.frames[0]);
 		var j;
 		var correctResult = a - b;
@@ -63,5 +66,7 @@ function testFloatSub(num, a, b) {
 		if (j == result.length) {
 			console.log('Arrays correctly subtracted. Each element = ' + correctResult);
 		}
-	});
+		aM.removeEventListener('floatsub', handler);
+	};
+	aM.addEventListener('floatsub', handler);
 }
