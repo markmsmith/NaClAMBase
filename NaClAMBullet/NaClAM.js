@@ -8,9 +8,8 @@ NaClAMMessage.prototype.reset = function() {
 	this.frames = new Array();
 }
 
-function NaClAM(embedId, logId) {
+function NaClAM(embedId) {
 	this.embedId = embedId;
-	this.logId = logId;
 	this.requestId = 0;
 	this.message = new NaClAMMessage();
 	this.state = 0;
@@ -28,12 +27,7 @@ NaClAM.prototype.disable = function() {
 }
 
 NaClAM.prototype.log_ = function(msg) {
-	logDiv = document.getElementById(this.logId);
-    var old = logDiv.innerHTML;
-    logDiv.innerHTML = "<p>";
-    logDiv.innerHTML += msg;
-    logDiv.innerHTML += "</p>";
-    logDiv.innerHTML += old;  
+	console.log(msg);
 }
 
 NaClAM.prototype.handleMesssage_ = function(event) {
@@ -75,7 +69,7 @@ NaClAM.prototype.handleMesssage_ = function(event) {
 }
 
 NaClAM.prototype.messageHeaderIsValid_ = function(header) {
-	if (!header['cmd']) {
+	if (header['cmd'] == undefined) {
 		console.log('NaClAM: Message header does not contain cmd.');
 		return false;
 	}
@@ -83,7 +77,7 @@ NaClAM.prototype.messageHeaderIsValid_ = function(header) {
 		console.log('NaClAm: Message cmd is not a string.');
 		return false;
 	}
-	if (!header['frames']) {
+	if (header['frames'] == undefined) {
 		console.log('NaClAM: Message header does not contain frames.');
 		return false;
 	}
@@ -91,7 +85,7 @@ NaClAM.prototype.messageHeaderIsValid_ = function(header) {
 		console.log('NaClAm: Message frames is not a number.');
 		return false;
 	}
-	if (!header['request']) {
+	if (header['request'] == undefined) {
 		console.log('NaClAM: Message header does not contain request.');
 		return false;
 	}
