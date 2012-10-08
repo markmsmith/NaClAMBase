@@ -1,4 +1,5 @@
 #include <string>
+#include <map>
 #include "NaClAMBase/NaClAMBase.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
@@ -16,6 +17,9 @@ public:
   btCollisionDispatcher* dispatcher;
   btBroadphaseInterface* broadphase;
   btSequentialImpulseConstraintSolver* solver;
+
+  std::map<std::string, btCollisionShape*> shapes;
+  std::map<std::string, btCollisionObject*> objectNames;
 
   BulletScene() {
     dynamicsWorld = NULL;
@@ -111,6 +115,15 @@ public:
       delete collisionConfiguration;
       collisionConfiguration = NULL;
     }
+    // Delete shapes
+    std::map<std::string, btCollisionShape*>::iterator it = shapes.begin();
+    while (it != shapes.end()) {
+      delete (*it).second;
+      it++;
+    }
+    shapes.clear();
+    // Clear name table
+    objectNames.clear();
   }
 
   void AddGroundPlane() {
@@ -140,8 +153,6 @@ public:
     AddGroundPlane();
   }
 
-  
-
   void AddBox(const btTransform& T, float mass) {
     bool isDynamic = (mass != 0.f);
     btVector3 localInertia(0,0,0);
@@ -151,6 +162,90 @@ public:
       btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,boxShape,localInertia);
       btRigidBody* body = new btRigidBody(rbInfo);
       dynamicsWorld->addRigidBody(body);
+  }
+
+  void AddShape(const Json::Value& shape) {
+    Json::Value name = shape["name"];
+    Json::Value type = shape["type"];
+
+    std::string shapeType = type.asString();
+
+    btCollisionShape* bulletShape = NULL;
+
+    if (shapeType.compare("cube") == 0) {
+      Json::Value wx = shape["wx"];
+      Json::Value wy = shape["wy"];
+      Json::Value wz = shape["wz"];
+      btVector3 halfExtents = btVector3(wx.asFloat(), wy.asFloat(), wz.asFloat());
+      halfExtents *= btScalar(0.5);
+      bulletShape = new btBoxShape(halfExtents);
+    } else if (shapeType.compare("convex") == 0) {
+      Json::Value points = shape["points"];
+      int numPoints = points.size();
+      if (numPoints > 0) {
+        btVector3* convexHull = new btVector3[numPoints];
+        for (int i = 0; i < numPoints; i++) {
+          convexHull[i][0] = points[i][0].asFloat();
+          convexHull[i][1] = points[i][1].asFloat();
+          convexHull[i][2] = points[i][2].asFloat();
+        }
+        bulletShape = new btConvexHullShape(&convexHull[0][0], numPoints);
+      }
+    } else if (shapeType.compare("sphere") == 0) {
+      Json::Value radius = shape["radius"];
+      bulletShape = new btSphereShape(radius.asFloat());
+    } else if (shapeType.compare("cylinder") == 0) {
+      Json::Value radius = shape["radius"];
+      Json::Value height = shape["height"];
+      btVector3 halfExtents = btVector3(radius.asFloat(), height.asFloat()*0.5f, 0.0f);
+      bulletShape = new btCylinderShape(halfExtents);
+    } else {
+      NaClAMPrintf("Could not load shape type %s\n", shapeType.c_str());
+      return;
+    }
+
+    if (bulletShape == NULL) {
+      NaClAMPrintf("Could not build shape %s\n", name.asString().c_str());
+      return;
+    }
+
+    shapes[name.asString()] = bulletShape;
+
+    NaClAMPrintf("Added shape %s of %s\n", name.asString().c_str(), type.asString().c_str());
+  }
+
+  void AddBody(const Json::Value& bodyDesc) {
+    std::string shapeName = bodyDesc["shape"].asString();
+    float mass = bodyDesc["mass"].asFloat();
+    float friction = bodyDesc["friction"].asFloat();
+    Json::Value transform = bodyDesc["transform"];
+    btCollisionShape* shape = boxShape;
+    if (shapes.count(shapeName) == 0) {
+      NaClAMPrintf("Could not find shape %s defaulting to unit cube.", shapeName.c_str());
+    } else {
+      shape = shapes[shapeName];
+    }
+
+    btTransform T;
+    T.setIdentity();
+    {
+      float m[16];
+      for (int i = 0; i < transform.size(); i++) {
+        m[i] = transform[i].asFloat();
+      }
+      T.setFromOpenGLMatrix(&m[0]);
+    }
+    
+
+    bool isDynamic = (mass != 0.f);
+    btVector3 localInertia(0,0,0);
+    if (isDynamic)
+      shape->calculateLocalInertia(mass,localInertia);
+    btDefaultMotionState* myMotionState = new btDefaultMotionState(T);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,shape,localInertia);
+    btRigidBody* body = new btRigidBody(rbInfo);
+    body->setFriction(friction);
+    dynamicsWorld->addRigidBody(body);
   }
 
   void Step() {
@@ -179,28 +274,22 @@ void NaClAMModuleHeartBeat(uint64_t microseconds) {
 }
 
 void handleLoadScene(const NaClAMMessage& message) {
-  const Json::Value& root = message.headerRoot;
-  const Json::Value& items = root["args"];
   scene.ResetScene();
-  int children = items.size();
-  btTransform T;
-  float m[16];
-  int count = 0;
-  for (int i = 0; i < children; i++) {
-    T.setIdentity();
-    T.setOrigin(btVector3(0.0, i * 1.0, 0.0));
-    const Json::Value& child = items[i];
-    if (child.isArray()) {
-      for (int j = 0; j < 16; j++) {
-        m[j] = child[j].asFloat();
-      }
-      T.setFromOpenGLMatrix(&m[0]);
-      scene.AddBox(T, 1.0);
-      count++;
-    } else {
-      NaClAMPrintf("Unknown Scene Object");
-    }
+  const Json::Value& root = message.headerRoot;
+  const Json::Value& sceneDesc = root["args"];
+  const Json::Value& shapes = sceneDesc["shapes"];
+  const Json::Value& bodies = sceneDesc["bodies"];
+  int numShapes = shapes.size();
+
+  for (int i = 0; i < numShapes; i++) {
+    scene.AddShape(shapes[i]);
   }
+
+  int numBodies = bodies.size();
+  for (int i = 0; i < numBodies; i++) {
+    scene.AddBody(bodies[i]);
+  }
+  
   // Scene created.
   {
     Json::Value root;
@@ -208,14 +297,13 @@ void handleLoadScene(const NaClAMMessage& message) {
     root["frames"] = Json::Value(0);
     root["request"] = Json::Value(message.requestId);
     root["cmd"] = Json::Value("sceneloaded");
-    root["sceneobjectcount"] = Json::Value(count);
+    root["sceneobjectcount"] = Json::Value(numBodies);
     std::string jsonMessage = writer.write(root);
     PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
       jsonMessage.length());
     NaClAMSendMessage(msgVar, NULL, 0);
     moduleInterfaces.var->Release(msgVar);
   }
-  
 }
 
 void handleStepScene(const NaClAMMessage& message) {

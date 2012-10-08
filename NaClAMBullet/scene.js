@@ -1,184 +1,252 @@
 var container, stats;
-			var camera, controls, scene, projector, renderer;
-			var objects = [], plane;
+var camera, controls, scene, projector, renderer;
+var plane;
 
-			var hold = false;
-			var holdObjectIndex = -1;
+var hold = false;
+var holdObjectIndex = -1;
 
-			var mouse = new THREE.Vector2(),
-			offset = new THREE.Vector3(),
-			INTERSECTED, SELECTED;
-			
+var mouse = new THREE.Vector2();
+var offset = new THREE.Vector3();
+var INTERSECTED, SELECTED;
 
-			var sceneDescription = [];
-			function init() {
+var sceneDescription = [];
 
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+var shapes = {};
+var objects = [];
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.y = 20.0;
-				camera.position.z = 40;
+function clearWorld() {
+	for (var i = 0; i < objects.length; i++) {
+		scene.remove(objects[i]);
+	}
+	objects = [];
+	shapes = {};
+	// Make sure we drop the object.
+	hold = false;
+	SELECTED = undefined;
+	NaClAMBulletDropObject();
+}
 
-				controls = new THREE.TrackballControls( camera );
-				controls.rotateSpeed = 1.0;
-				controls.zoomSpeed = 5.0;
-				controls.panSpeed = 0.8;
-				controls.noZoom = false;
-				controls.noPan = false;
-				controls.staticMoving = true;
-				controls.dynamicDampingFactor = 0.3;
-				controls.handleResize();
+function loadShape(shape) {
+	if (shapes[shape.name] != undefined) {
+		return shapes[shape.name];
+	}
 
-				scene = new THREE.Scene();
+	if (shape.type == "cube") {
+		shapes[shape.name] = new THREE.CubeGeometry(shape['wx'], shape['wy'], shape['wz']);
+		return shapes[shape.name];
+	}
 
-				scene.add( new THREE.AmbientLight( 0x505050 ) );
+	if (shape.type == "convex") {
+		var vertices = [];
+		for (var i = 0; i < shape['points'].length; i++) {
+			vertices.push(new THREE.Vector3(shape['points'][i][0], shape['points'][i][1], shape['points'][i][2]));
+		}
+		shapes[shape.name] = new THREE.ConvexGeometry(vertices);
+		return shapes[shape.name];
+	}
 
-				var light = new THREE.SpotLight( 0xffffff, 1.5 );
-				light.position.set( 0, 500, 2000 );
-				light.castShadow = true;
+	if (shape.type == "cylinder") {
+		shapes[shape.name] = new THREE.CylinderGeometry(shape['radius'], shape['radius'], shape['height'])
+		return shapes[shape.name];
+	}
 
-				light.shadowCameraNear = 200;
-				light.shadowCameraFar = camera.far;
-				light.shadowCameraFov = 50;
+	if (shape.type == "sphere") {
+		shapes[shape.name] = new THREE.SphereGeometry(shape['radius']);
+		return shapes[shape.name];
+	}
 
-				light.shadowBias = -0.00022;
-				light.shadowDarkness = 0.5;
+	return undefined;
+}
 
-				light.shadowMapWidth = 2048;
-				light.shadowMapHeight = 2048;
+function loadBody(body) {
+	var shape = shapes[body.shape];
+	if (shape == undefined) {
+		return shape;
+	}
 
-				scene.add( light );
+	var object = new THREE.Mesh( shape, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
-				var geometry = new THREE.CubeGeometry( 1, 1, 1 );
-				
-				for ( var i = 0; i < 400; i ++ ) {
+	object.material.ambient = object.material.color;
 
-					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+	object.position.x = body.position.x;
+	object.position.y = body.position.y;
+	object.position.z = body.position.z;
 
-					object.material.ambient = object.material.color;
+	object.rotation.x = body.rotation.x;
+	object.rotation.y = body.rotation.y;
+	object.rotation.z = body.rotation.z;
 
-					object.position.x = Math.random() * 10 - 25;
-					object.position.y = Math.random() * 50 + 1;
-					object.position.z = Math.random() * 40 - 20;
+	object.updateMatrixWorld(true);
+	var T = [object.matrixWorld.elements[0],
+			 object.matrixWorld.elements[1],
+			 object.matrixWorld.elements[2],
+			 object.matrixWorld.elements[3],
+			 object.matrixWorld.elements[4],
+			 object.matrixWorld.elements[5],
+			 object.matrixWorld.elements[6],
+			 object.matrixWorld.elements[7],
+			 object.matrixWorld.elements[8],
+			 object.matrixWorld.elements[9],
+			 object.matrixWorld.elements[10],
+			 object.matrixWorld.elements[11],
+			 object.matrixWorld.elements[12],
+			 object.matrixWorld.elements[13],
+			 object.matrixWorld.elements[14],
+			 object.matrixWorld.elements[15]];
+	body.transform = T;
 
-					object.rotation.x = ( Math.random() * 360 ) * Math.PI / 180;
-					object.rotation.y = ( Math.random() * 360 ) * Math.PI / 180;
-					object.rotation.z = ( Math.random() * 360 ) * Math.PI / 180;
+	object.castShadow = false;
+	object.receiveShadow = false;
+	object.matrixAutoUpdate = false;
+	object.objectTableIndex = objects.length;
+	scene.add(object);
+	objects.push(object);
 
-					object.updateMatrixWorld(true);
+	return object;
+}
 
-					var T = [object.matrixWorld.elements[0],
-							 object.matrixWorld.elements[1],
-							 object.matrixWorld.elements[2],
-							 object.matrixWorld.elements[3],
-							 object.matrixWorld.elements[4],
-							 object.matrixWorld.elements[5],
-							 object.matrixWorld.elements[6],
-							 object.matrixWorld.elements[7],
-							 object.matrixWorld.elements[8],
-							 object.matrixWorld.elements[9],
-							 object.matrixWorld.elements[10],
-							 object.matrixWorld.elements[11],
-							 object.matrixWorld.elements[12],
-							 object.matrixWorld.elements[13],
-							 object.matrixWorld.elements[14],
-							 object.matrixWorld.elements[15]];
-					sceneDescription.push(T);
-					object.castShadow = true;
-					object.receiveShadow = true;
-					object.matrixAutoUpdate = false;
-					object.objectTableIndex = i;
-					scene.add(object);
-					objects.push(object);
-				}
+function loadWorld(worldDescription) {
+	clearWorld();
+	var i;
+	var shapes = worldDescription['shapes'];
+	var bodies = worldDescription['bodies'];
+	for (i = 0; i < shapes.length; i++) {
+		if (loadShape(shapes[i]) == undefined) {
+			console.log('Could not load shape ' + shapes[i].name);
+		}
+	}
 
-				plane = new THREE.Mesh( new THREE.PlaneGeometry( 200, 200, 100, 100), new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.25, transparent: true, wireframe: true } ) );
-				plane.rotation.x = Math.PI * 0.5;
-				plane.visible = true;
-				scene.add( plane );
-				projector = new THREE.Projector();
+	for (i = 0; i < bodies.length; i++) {
+		if (loadBody(bodies[i]) == undefined) {
+			console.log('Could not make body.');
+		}
+	}
 
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.sortObjects = false;
-				renderer.setSize( window.innerWidth, window.innerHeight );
+	NaClAMBulletLoadScene(worldDescription);
+}
 
-				renderer.shadowMapEnabled = true;
-				renderer.shadowMapSoft = true;
+function init() {
+	container = document.createElement( 'div' );
+	document.body.appendChild( container );
 
-				container.appendChild( renderer.domElement );
+	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+	camera.position.y = 20.0;
+	camera.position.z = 40;
 
-				var info = document.createElement( 'div' );
-				info.style.position = 'absolute';
-				info.style.top = '10px';
-				info.style.width = '100%';
-				info.style.textAlign = 'center';
-				info.innerHTML = '<a href="https://github.com/johnmccutchan/NaClAMBase" target="_blank">NaClAMBase</a> NaClAM - Bullet';
-				container.appendChild( info );
+	controls = new THREE.TrackballControls( camera );
+	controls.rotateSpeed = 1.0;
+	controls.zoomSpeed = 5.0;
+	controls.panSpeed = 0.8;
+	controls.noZoom = false;
+	controls.noPan = false;
+	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.3;
+	controls.handleResize();
 
-				//
+	scene = new THREE.Scene();
 
-				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				window.addEventListener( 'resize', onWindowResize, false );
-				window.addEventListener('keydown', onDocumentKeyDown, false);
-				window.addEventListener('keyup', onDocumentKeyUp, false);
-			}
+	scene.add( new THREE.AmbientLight( 0x505050 ) );
 
-			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				controls.handleResize();
-			}
+	var light = new THREE.SpotLight( 0xffffff, 1.5 );
+	light.position.set( 0, 500, 2000 );
+	light.castShadow = true;
 
-			function onDocumentKeyDown(event) {
-				if (event.keyCode == 72) {
-					if (SELECTED != undefined) {
-						return;
-					}
-					hold = true;
-					var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-					projector.unprojectVector( vector, camera );
-					var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-					var intersects = ray.intersectObjects( objects );
-					if (intersects.length > 0) {
-						if (intersects[0].object != plane) {
-							SELECTED = intersects[0].object;
-							console.log(SELECTED.objectTableIndex);
-							NaClAMBulletPickObject(SELECTED.objectTableIndex, camera.position, intersects[0].point);
-						}	
-					}
-				}
-			}
+	light.shadowCameraNear = 200;
+	light.shadowCameraFar = camera.far;
+	light.shadowCameraFov = 50;
 
-			function onDocumentKeyUp(event) {
-				if (event.keyCode == 72) {
-					hold = false;
-					SELECTED = undefined;
-					NaClAMBulletDropObject();
-				}	
-			}
+	light.shadowBias = -0.00022;
+	light.shadowDarkness = 0.5;
 
-			function onDocumentMouseMove( event ) {
-				event.preventDefault();
-				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-				var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-				projector.unprojectVector( vector, camera );
-				offset.x = vector.x;
-				offset.y = vector.y;
-				offset.z = vector.z;
-			}
+	light.shadowMapWidth = 2048;
+	light.shadowMapHeight = 2048;
 
-			//
+	scene.add( light );
+	
+	plane = new THREE.Mesh( new THREE.PlaneGeometry( 200, 200, 100, 100), new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.25, transparent: true, wireframe: true } ) );
+	plane.rotation.x = Math.PI * 0.5;
+	plane.visible = true;
+	scene.add( plane );
+	projector = new THREE.Projector();
 
-			function animate() {
-				window.requestAnimationFrame(animate);
-				aM.sendMessage('stepscene', {rayFrom: [camera.position.x, camera.position.y, camera.position.z], rayTo: [offset.x, offset.y, offset.z]});
-				render();
-			}
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer.sortObjects = false;
+	renderer.setSize( window.innerWidth, window.innerHeight );
 
-			function render() {
-				controls.update();
-				renderer.render( scene, camera );
-			}
+	renderer.shadowMapEnabled = true;
+	renderer.shadowMapSoft = true;
+
+	container.appendChild( renderer.domElement );
+
+	var info = document.createElement( 'div' );
+	info.style.position = 'absolute';
+	info.style.top = '10px';
+	info.style.width = '100%';
+	info.style.textAlign = 'center';
+	info.innerHTML = '<a href="https://github.com/johnmccutchan/NaClAMBase" target="_blank">NaClAMBase</a> NaClAM - Bullet';
+	container.appendChild( info );
+
+	renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	window.addEventListener( 'resize', onWindowResize, false );
+	window.addEventListener('keydown', onDocumentKeyDown, false);
+	window.addEventListener('keyup', onDocumentKeyUp, false);
+}
+
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	controls.handleResize();
+}
+
+function onDocumentKeyDown(event) {
+	if (event.keyCode == 72) {
+		if (SELECTED != undefined) {
+			return;
+		}
+		hold = true;
+		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+		projector.unprojectVector( vector, camera );
+		var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+		var intersects = ray.intersectObjects( objects );
+		if (intersects.length > 0) {
+			if (intersects[0].object != plane) {
+				SELECTED = intersects[0].object;
+				//console.log(SELECTED.objectTableIndex);
+				NaClAMBulletPickObject(SELECTED.objectTableIndex, camera.position, intersects[0].point);
+			}	
+		}
+	}
+}
+
+function onDocumentKeyUp(event) {
+	if (event.keyCode == 72) {
+		hold = false;
+		SELECTED = undefined;
+		NaClAMBulletDropObject();
+	}	
+}
+
+function onDocumentMouseMove( event ) {
+	event.preventDefault();
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+	projector.unprojectVector( vector, camera );
+	offset.x = vector.x;
+	offset.y = vector.y;
+	offset.z = vector.z;
+}
+
+//
+
+function animate() {
+	window.requestAnimationFrame(animate);
+	aM.sendMessage('stepscene', {rayFrom: [camera.position.x, camera.position.y, camera.position.z], rayTo: [offset.x, offset.y, offset.z]});
+	render();
+}
+
+function render() {
+	controls.update();
+	renderer.render( scene, camera );
+}

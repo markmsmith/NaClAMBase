@@ -10,6 +10,7 @@
       aM = new NaClAM('NaClAM');
       aM.enable();
       init();
+      animate();
       NaClAMBulletInit();
       NaClAMBulletLoadScene(sceneDescription);
     }
@@ -18,6 +19,8 @@
   <script type="text/javascript" src="NaClAMBullet.js"></script>
   <script type="text/javascript" src="three.min.js"></script>
   <script type="text/javascript" src="scene.js"></script>
+  <script type="text/javascript" src="world.js"></script>
+  <script type="text/javascript" src="scenes.js"></script>
 </head>
 <body onload="pageDidLoad()">
 <embed name="nacl_module" id="NaClAM" width=1 height=1 src="NaClAmBullet.nmf"type="application/x-nacl" />
