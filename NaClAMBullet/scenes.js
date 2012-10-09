@@ -73,7 +73,7 @@ function jengaScene(height) {
 		wz: 5
 	});
 	worldDescription.bodies = [];
-	var baseHeight = 0.1;
+	var baseHeight = 0.55;
 	for (var i = 0; i < height; i++) {
 		var y = i * 1.0 + baseHeight;
 		if (i % 2 == 0) {
@@ -119,7 +119,7 @@ function jengaScene(height) {
 	return worldDescription;
 }
 
-function randomShapeScene() {
+function randomShapeScene(numObjects) {
 	var worldDescription = {};
 	worldDescription.shapes = [];
 	worldDescription.shapes.push({
@@ -147,20 +147,23 @@ function randomShapeScene() {
 			[0.0, 0.0, 0.0],
 			[0.0, 1.0, 0.0],
 			[0.0, 0.0, 1.0],
+			[0.0, 0.0, 1.0],
+			[2.0, 5.0, 1.0],
 			[1.0, 1.0, 1.0]
 		]
 	});
 
+	var numShapes = 4;
 	worldDescription.bodies = [];
-	for (var i = 0; i < 4; i++) {
+	for (var i = 0; i < numObjects; i++) {
 		var body = {};
-		if (i == 0) {
+		if (i % numShapes == 0) {
 			body.shape = 'stick';
-		} else if (i == 1) {
+		} else if (i % numShapes == 1) {
 			body.shape = 'tube';
-		} else if (i == 2) {
+		} else if (i % numShapes == 2) {
 			body.shape = 'sphere';
-		} else if (i == 3) {
+		} else if (i % numShapes == 3) {
 			body.shape = 'tri';
 		}
 		body.position = {};
@@ -172,10 +175,51 @@ function randomShapeScene() {
 		body.rotation.y = ( Math.random() * 360 ) * Math.PI / 180;
 		body.rotation.z = ( Math.random() * 360 ) * Math.PI / 180;
 		body.mass = 1.0;
-		body.friction = 0.2;
+		body.friction = 0.4;
 		worldDescription.bodies.push(body);
 	}
 	return worldDescription;
 }
 
 
+function loadJenga5() {
+	loadWorld(jengaScene(5));
+}
+
+function loadJenga10() {
+	loadWorld(jengaScene(10));
+}
+
+function loadJenga20() {
+	loadWorld(jengaScene(20));
+}
+
+function loadRandomShapes() {
+	loadWorld(randomShapeScene(100));
+}
+
+function load400RandomCubes() {
+	loadWorld(randomCubeScene(400));
+}
+
+function load400RandomCylinders() {
+	loadWorld(randomCylinderScene(400));
+}
+
+function loadTextScene(evt) {
+	var txt = evt.target.result;
+	if (txt == undefined) {
+		alert('Could not load file.');
+		return;
+	}
+	var sceneDescription;
+
+	try {
+		sceneDescription = JSON.parse(txt);
+	} catch(e) {
+		alert(e);
+		return;
+	}
+
+	loadWorld(sceneDescription);
+}

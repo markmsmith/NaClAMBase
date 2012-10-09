@@ -28,6 +28,12 @@ function NaClAMBulletStepSceneHandler(msg) {
 	var j;
 	var numTransforms = 0;
 	if (msg.header.cmd == 'sceneupdate') {
+		if (skipSceneUpdates > 0) {
+			skipSceneUpdates--;
+			return;
+		}
+		var simTime = msg.header.simtime;
+		document.getElementById('simulationTime').innerHTML = '<p>Simulation time: ' + simTime + ' microseconds</p>';
 		TransformBuffer = new Float32Array(msg.frames[0]);
 		numTransforms = TransformBuffer.length/16;
 		for (i = 0; i < numTransforms; i++) {

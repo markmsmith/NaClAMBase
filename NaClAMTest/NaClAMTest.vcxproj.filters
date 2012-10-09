@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NaClAMTest.cpp">
+    <ClCompile Include="floatops.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="floatops.cpp">
+    <ClCompile Include="NaClAMTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

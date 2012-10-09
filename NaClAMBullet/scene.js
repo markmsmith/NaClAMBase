@@ -1,7 +1,8 @@
 var container, stats;
 var camera, controls, scene, projector, renderer;
 var plane;
-
+var lastSceneDescription;
+var skipSceneUpdates = 0;
 var hold = false;
 var holdObjectIndex = -1;
 
@@ -122,7 +123,19 @@ function loadWorld(worldDescription) {
 		}
 	}
 
+	var r = verifyWorldDescription(worldDescription);
+	if (r == false) {
+		alert('Invalid scene description. See console.');
+		return;
+	}
+	skipSceneUpdates = 4;
 	NaClAMBulletLoadScene(worldDescription);
+	lastSceneDescription = worldDescription;
+}
+
+function reloadScene() {
+	if (lastSceneDescription)
+		loadWorld(lastSceneDescription);
 }
 
 function init() {
@@ -133,15 +146,7 @@ function init() {
 	camera.position.y = 20.0;
 	camera.position.z = 40;
 
-	controls = new THREE.TrackballControls( camera );
-	controls.rotateSpeed = 1.0;
-	controls.zoomSpeed = 5.0;
-	controls.panSpeed = 0.8;
-	controls.noZoom = false;
-	controls.noPan = false;
-	controls.staticMoving = true;
-	controls.dynamicDampingFactor = 0.3;
-	controls.handleResize();
+
 
 	scene = new THREE.Scene();
 
@@ -178,16 +183,98 @@ function init() {
 
 	container.appendChild( renderer.domElement );
 
-	var info = document.createElement( 'div' );
-	info.style.position = 'absolute';
-	info.style.top = '10px';
-	info.style.width = '100%';
-	info.style.textAlign = 'center';
-	info.innerHTML = '<a href="https://github.com/johnmccutchan/NaClAMBase" target="_blank">NaClAMBase</a> NaClAM - Bullet';
-	container.appendChild( info );
+/*
+	controls = new THREE.TrackballControls( camera );
+	controls.rotateSpeed = 1.0;
+	controls.zoomSpeed = 5.0;
+	controls.panSpeed = 0.8;
+	controls.noZoom = false;
+	controls.noPan = false;
+	controls.staticMoving = true;
+	controls.dynamicDampingFactor = 0.3;
+	controls.handleResize();
+	*/
+	controls = new THREE.OrbitControls (camera, container);
+	
 
-	renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	window.addEventListener( 'resize', onWindowResize, false );
+	var infoBar = document.createElement ('div');
+	infoBar.style.position = 'absolute';
+	infoBar.style.top = '10px';
+	infoBar.style.width = '100%';
+	infoBar.style.textAlign = 'center';
+	container.appendChild( infoBar );
+
+	var info = document.createElement('div');
+	info.innerHTML = '<a href="https://github.com/johnmccutchan/NaClAMBase" target="_blank">NaClAMBase</a> NaClAM - Bullet<p>Hold "h" to pick up an object</p>';
+	infoBar.appendChild(info);
+
+	var info = document.createElement('div');
+	info.innerHTML = '<a href="http://www.johnmccutchan.com/blogpost/">What am I looking at?</a>';
+	infoBar.appendChild(info);
+
+	var info = document.createElement('div');
+	info.setAttribute("id", "simulationTime");
+	info.innerHTML = '<p>Simulation time: 0 microseconds</p>';
+	infoBar.appendChild(info);
+
+	info = document.createElement ( 'div' );
+	infoBar.appendChild(info);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = 'Jenga 5';
+	demoButton.addEventListener('click', loadJenga5, false);
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = 'Jenga 10';
+	demoButton.addEventListener('click', loadJenga10, false);
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = 'Jenga 20';
+	demoButton.addEventListener('click', loadJenga20, false);
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = 'Random Shapes';
+	demoButton.addEventListener('click', loadRandomShapes, false);
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = '400 Random Cubes';
+	demoButton.addEventListener('click', load400RandomCubes, false);
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = '400 Random Cylinders';
+	demoButton.addEventListener('click', load400RandomCylinders, false);
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement('input');
+	demoButton.innerHTML = 'Upload Scene';
+	demoButton.setAttribute("type", "file");
+	demoButton.setAttribute("id", "UploadButton");
+	var uploadButton = demoButton;
+	demoButton.addEventListener('change', function(evt) {
+		var files = evt.target.files;
+		if (evt.target.files.length <= 0) {
+			return;
+		}
+		var f = files[0];
+		var reader = new FileReader();
+		reader.addEventListener('load', loadTextScene);
+		reader.readAsText(f, "UTF-8");
+		uploadButton.setAttribute("value", "");
+	});
+	info.appendChild(demoButton);
+
+	demoButton = document.createElement ('button');
+	demoButton.innerHTML = 'Reload Scene';
+	demoButton.addEventListener('click', reloadScene, false);
+	info.appendChild(demoButton);
+
+	renderer.domElement.addEventListener('mousemove', onDocumentMouseMove, false );
+	window.addEventListener('resize', onWindowResize, false );
 	window.addEventListener('keydown', onDocumentKeyDown, false);
 	window.addEventListener('keyup', onDocumentKeyUp, false);
 }
@@ -196,7 +283,7 @@ function onWindowResize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
-	controls.handleResize();
+	//controls.handleResize();
 }
 
 function onDocumentKeyDown(event) {

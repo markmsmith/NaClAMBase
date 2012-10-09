@@ -1,9 +1,16 @@
 #include <string>
 #include <map>
+#include <sys/time.h>
 #include "NaClAMBase/NaClAMBase.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 
+static uint64_t microseconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000000 + tv.tv_usec;
+
+}
 class BulletScene {
 public:
   btCollisionShape* boxShape;
@@ -334,8 +341,11 @@ void handleStepScene(const NaClAMMessage& message) {
     scene.movePickingConstraint(btVector3(cx, cy, cz), btVector3(x,y,z));
   }
 
+  uint64_t start = microseconds();
   // Do work
   scene.Step();
+  uint64_t end = microseconds();
+  uint64_t delta = end-start;
   {
     // Build headers
     Json::Value root;
@@ -343,6 +353,7 @@ void handleStepScene(const NaClAMMessage& message) {
     root["frames"] = Json::Value(1);
     root["request"] = Json::Value(message.requestId);
     root["cmd"] = Json::Value("sceneupdate");
+    root["simtime"] = Json::Value(delta);
     std::string jsonMessage = writer.write(root);
     PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
       jsonMessage.length());

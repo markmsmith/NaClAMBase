@@ -15,6 +15,9 @@ function verifyWorldDescription(description) {
 
 	for (i = 0; i < bodies.length; i++) {
 		r = verifyBodyDescription(bodies[i], shapes);
+		if (r == false) {
+			return false;
+		}
 	}
 
 	return true;
