@@ -43,6 +43,13 @@ extern PP_Instance moduleInstance;
 void NaClAMPrintf(const char*, ...);
 
 /**
+ * Constructs a JSON object ready as a reply to requestId
+ * @param cmd A string containing the command name.
+ * @param requestId The request id.
+ */
+Json::Value NaClAMMakeReplyObject(std::string cmd, int requestId);
+
+/**
  *
  * Send a message back to JavaScript. 
  * @param header A string containing a JSON NaCL AM message header.
@@ -50,6 +57,16 @@ void NaClAMPrintf(const char*, ...);
  * @param numFrames Length of frames array
  */
 void NaClAMSendMessage(const PP_Var& header, const PP_Var* frames, uint32_t numFrames);
+
+
+/**
+ *
+ * Send a message back to JavaScript. 
+ * @param header A Json::Value representing the header JSON object.
+ * @param frames An array of arbitrary Strings or ArrayBuffers
+ * @param numFrames Length of frames array
+ */
+void NaClAMSendMessage(const Json::Value& header, const PP_Var* frames, uint32_t numFrames);
 
 /* Acceleration Modules implement the following functions: */
 

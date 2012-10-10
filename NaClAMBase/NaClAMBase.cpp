@@ -26,6 +26,14 @@ static uint64_t microseconds() {
   return tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
+
+Json::Value NaClAMMakeReplyObject(std::string cmd, int requestId) {
+  Json::Value root;
+  root["cmd"] = Json::Value(cmd);
+  root["request"] = Json::Value(requestId);
+  return root;
+}
+
 void NaClAMSendMessage(const PP_Var& header, const PP_Var* frames, uint32_t numFrames) {
   if (moduleInterfaces.messaging != NULL && moduleInstance != 0) {
     moduleInterfaces.messaging->PostMessage(moduleInstance, header);
@@ -33,6 +41,17 @@ void NaClAMSendMessage(const PP_Var& header, const PP_Var* frames, uint32_t numF
       moduleInterfaces.messaging->PostMessage(moduleInstance, frames[i]);
     }
   }
+}
+
+void NaClAMSendMessage(const Json::Value& header, const PP_Var* frames, uint32_t numFrames) {
+  Json::StyledWriter writer;
+  Json::Value root = header;
+  root["frames"] = Json::Value(numFrames);
+  std::string jsonMessage = writer.write(root);
+  PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
+    jsonMessage.length());
+  NaClAMSendMessage(msgVar, frames, numFrames);
+  moduleInterfaces.var->Release(msgVar);
 }
 
 static void messagePrint(const char* str) {

@@ -299,17 +299,9 @@ void handleLoadScene(const NaClAMMessage& message) {
   
   // Scene created.
   {
-    Json::Value root;
-    Json::StyledWriter writer;
-    root["frames"] = Json::Value(0);
-    root["request"] = Json::Value(message.requestId);
-    root["cmd"] = Json::Value("sceneloaded");
+    Json::Value root = NaClAMMakeReplyObject("sceneloaded", message.requestId);
     root["sceneobjectcount"] = Json::Value(numBodies);
-    std::string jsonMessage = writer.write(root);
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
-      jsonMessage.length());
-    NaClAMSendMessage(msgVar, NULL, 0);
-    moduleInterfaces.var->Release(msgVar);
+    NaClAMSendMessage(root, NULL, 0);
   }
 }
 
@@ -317,16 +309,8 @@ void handleStepScene(const NaClAMMessage& message) {
   if (scene.dynamicsWorld == NULL ||
       scene.dynamicsWorld->getNumCollisionObjects() == 1) {
     // No scene, just send a reply
-    Json::Value root;
-    Json::StyledWriter writer;
-    root["frames"] = Json::Value(0);
-    root["request"] = Json::Value(message.requestId);
-    root["cmd"] = Json::Value("noscene");
-    std::string jsonMessage = writer.write(root);
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
-      jsonMessage.length());
-    NaClAMSendMessage(msgVar, NULL, 0);
-    moduleInterfaces.var->Release(msgVar);
+    Json::Value root = NaClAMMakeReplyObject("noscene", message.requestId);
+    NaClAMSendMessage(root, NULL, 0);
     return;
   }
   {
@@ -348,16 +332,8 @@ void handleStepScene(const NaClAMMessage& message) {
   uint64_t delta = end-start;
   {
     // Build headers
-    Json::Value root;
-    Json::StyledWriter writer;
-    root["frames"] = Json::Value(1);
-    root["request"] = Json::Value(message.requestId);
-    root["cmd"] = Json::Value("sceneupdate");
+    Json::Value root = NaClAMMakeReplyObject("sceneupdate", message.requestId);
     root["simtime"] = Json::Value(delta);
-    std::string jsonMessage = writer.write(root);
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
-      jsonMessage.length());
-
     // Build transform frame
     int numObjects = scene.dynamicsWorld->getNumCollisionObjects();
     uint32_t TransformSize = (numObjects-1)*4*4*sizeof(float);
@@ -376,9 +352,8 @@ void handleStepScene(const NaClAMMessage& message) {
     moduleInterfaces.varArrayBuffer->Unmap(Transform);
 
     // Send message
-    NaClAMSendMessage(msgVar, &Transform, 1);
+    NaClAMSendMessage(root, &Transform, 1);
     moduleInterfaces.var->Release(Transform);
-    moduleInterfaces.var->Release(msgVar);
   }
 }
 

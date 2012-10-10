@@ -33,17 +33,9 @@ void handleFloatSum(const NaClAMMessage& message) {
 
   // Send reply
   {
-    Json::Value root;
-    Json::StyledWriter writer;
-    root["frames"] = Json::Value(0);
-    root["request"] = Json::Value(message.requestId);
-    root["cmd"] = Json::Value("floatsum");
-    root["sum"] = Json::Value(sum);
-    std::string jsonMessage = writer.write(root);
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
-                                                      jsonMessage.length());
-    NaClAMSendMessage(msgVar, NULL, 0);
-    moduleInterfaces.var->Release(msgVar);
+    Json::Value reply = NaClAMMakeReplyObject("floatsum", message.requestId);
+    reply["sum"] = Json::Value(sum);
+    NaClAMSendMessage(reply, NULL, 0);
   }
 }
 
@@ -68,16 +60,8 @@ void handleSubFloats(const NaClAMMessage& message) {
 
   // Send reply
   {
-    Json::Value root;
-    Json::StyledWriter writer;
-    root["frames"] = Json::Value(1);
-    root["request"] = Json::Value(message.requestId);
-    root["cmd"] = Json::Value("floatsub");
-    std::string jsonMessage = writer.write(root);
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
-      jsonMessage.length());
-    NaClAMSendMessage(msgVar, &message.frames[0], 1);
-    moduleInterfaces.var->Release(msgVar);
+    Json::Value reply = NaClAMMakeReplyObject("floatsub", message.requestId);
+    NaClAMSendMessage(reply, &message.frames[0], 1);
   }
 }
 
@@ -102,16 +86,8 @@ void handleAddFloats(const NaClAMMessage& message) {
 
   // Send reply
   {
-    Json::Value root;
-    Json::StyledWriter writer;
-    root["frames"] = Json::Value(1);
-    root["request"] = Json::Value(message.requestId);
-    root["cmd"] = Json::Value("floatadd");
-    std::string jsonMessage = writer.write(root);
-    PP_Var msgVar = moduleInterfaces.var->VarFromUtf8(jsonMessage.c_str(), 
-      jsonMessage.length());
-    NaClAMSendMessage(msgVar, &message.frames[0], 1);
-    moduleInterfaces.var->Release(msgVar);
+    Json::Value reply = NaClAMMakeReplyObject("floatadd", message.requestId);
+    NaClAMSendMessage(reply, &message.frames[0], 1);
   }
 }
 
