@@ -209,8 +209,17 @@ function init() {
 	infoBar.appendChild(info);
 
 	var info = document.createElement('div');
-	info.innerHTML = '<a href="http://www.johnmccutchan.com/blogpost/">What am I looking at?</a>';
-	infoBar.appendChild(info);
+	var innerInfoBar = document.createElement('div');
+	info.innerHTML = '<a href="http://www.johnmccutchan.com/2012/10/bullet-native-client-acceleration-module.html">What am I looking at?</a>';
+	innerInfoBar.appendChild(info);
+	var info = document.createElement('div');
+	info.classList.add("g-plus");
+	info.setAttribute("data-action", "share");
+	info.setAttribute("data-href", "http://www.johnmccutchan.com/2012/10/bullet-native-client-acceleration-module.html");
+	innerInfoBar.appendChild(info);
+	infoBar.appendChild(innerInfoBar);
+
+	gapi.plus.go();
 
 	var info = document.createElement('div');
 	info.setAttribute("id", "simulationTime");

@@ -1,5 +1,6 @@
 {
   "program": {
-    "x86-64": {"url": "newlib/NaClAMBullet.nexe"}
+    "x86-64": {"url": "newlib/NaClAMBullet64.nexe"},
+    "x86-32": {"url": "newlib/NaClAMBullet32.nexe"}
   }
 }
