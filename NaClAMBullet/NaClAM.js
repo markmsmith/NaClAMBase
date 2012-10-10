@@ -34,7 +34,14 @@ NaClAM.prototype.handleMesssage_ = function(event) {
 	var STATE_WAITING_FOR_HEADER = 0;
 	var STATE_COLLECTING_FRAMES = 1;
 	if (this.state == STATE_WAITING_FOR_HEADER) {
-		var header = JSON.parse(String(event.data));
+		var header;
+		try {
+			header = JSON.parse(String(event.data));
+		} catch (e) {
+			console.log(e);
+			console.log(event.data);
+			return;
+		}
 		// Special case our log print command
 		if (header['cmd'] == 'NaClAMPrint') {
 			this.log_(header['print'])
